@@ -1,7 +1,7 @@
-import { AuthController } from "@modules/auth/domain/controllers/auth.controller";
 import { AppDataSource } from "./utils-modules/database/config/database";
 import express from "express";
 import { AuthRoutes } from "@modules/auth/domain/routes/auth.routes";
+import { ShipmentRoutes } from "@modules/shipments/domain/routes/shipment.routes";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -16,6 +16,7 @@ app.get("/", (req, res) => {
 
 // Rutas
 app.use("/auth", AuthRoutes);
+app.use("/shipments", ShipmentRoutes);
 
 AppDataSource.initialize()
     .then(() => {

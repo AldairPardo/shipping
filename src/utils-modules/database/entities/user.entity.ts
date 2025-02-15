@@ -1,8 +1,9 @@
-import { Entity, PrimaryColumn, Column } from "typeorm";
+import { Entity, PrimaryColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from "typeorm";
 import { User } from "@modules/users/domain/models/user.model";
 import { Role } from "@modules/auth/domain/enums/role.enum";
+import { ShipmentEntity } from "./shipment.entity";
 
-@Entity("users")
+@Entity("user")
 export class UserEntity {
     @PrimaryColumn()
     id!: string;
@@ -19,8 +20,8 @@ export class UserEntity {
     @Column()
     password!: string;
 
-    @Column({ nullable: true })
-    phone?: string;
+    @Column()
+    phone!: string;
 
     @Column({ nullable: true })
     doc_type?: string;
@@ -35,6 +36,15 @@ export class UserEntity {
     })
     role!: Role;
 
+    @CreateDateColumn()
+    created_at!: Date;
+
+    @UpdateDateColumn()
+    updated_at!: Date;
+
+    @OneToMany(() => ShipmentEntity, (shipment) => shipment.sender)
+    shipments?: ShipmentEntity[];
+
     loadModel(model: User) {
         this.id = model.id;
         this.firstname = model.firstname;
@@ -45,6 +55,8 @@ export class UserEntity {
         this.doc_type = model.docType;
         this.doc_number = model.docNumber;
         this.role = model.role;
+        this.created_at = model.createdAt;
+        this.updated_at = model.updatedAt;
     }
 
     toModel(): User {
@@ -52,13 +64,15 @@ export class UserEntity {
             this.firstname,
             this.lastname,
             this.email,
+            this.phone,
             this.password,
             this.role,
             {
                 id: this.id,
-                phone: this.phone,
                 docType: this.doc_type,
                 docNumber: this.doc_number,
+                createdAt: this.created_at,
+                updatedAt: this.updated_at,
             }
         );
     }

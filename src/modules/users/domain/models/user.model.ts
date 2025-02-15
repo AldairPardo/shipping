@@ -3,11 +3,11 @@ import { createHash } from "crypto";
 import bcrypt from "bcrypt";
 import { Role } from "@modules/auth/domain/enums/role.enum";
 import { UserDto } from "../dtos/user.dto";
+import { SenderDto } from "@modules/shipments/domain/dtos/sender.dto";
 
 
 export class User {
     readonly id: string;
-    readonly phone?: string;
     readonly docType?: string;
     readonly docNumber?: string;
     readonly createdAt: Date;
@@ -17,11 +17,11 @@ export class User {
         readonly firstname: string,
         readonly lastname: string,
         readonly email: string,
+        readonly phone: string,
         readonly password: string,
         readonly role: Role = Role.CUSTOMER,
         options?: {
             id?: string;
-            phone?: string;
             docType?: string;
             docNumber?: string;
             createdAt?: Date;
@@ -29,7 +29,6 @@ export class User {
         }
     ) {
         this.id = options?.id ?? User.newId;
-        this.phone = options?.phone;
         this.docType = options?.docType;
         this.docNumber = options?.docNumber;
         this.createdAt = options?.createdAt ?? new Date();
@@ -50,16 +49,26 @@ export class User {
         };
     }
 
+    toSenderJson(): SenderDto {
+        return {
+            id: this.id,
+            firstname: this.firstname,
+            lastname: this.lastname,
+            email: this.email,
+            phone: this.phone,
+        };
+    }
+
     static fromJson(json: UserDto): User {
         return new User(
             json.firstname,
             json.lastname,
             json.email,
+            json.phone,
             json.password,
             json.role,
             {
                 id: json.id,
-                phone: json.phone,
                 docType: json.docType,
                 docNumber: json.docNumber,
             }
@@ -73,6 +82,7 @@ export class User {
     public async comparePassword(password: string): Promise<boolean> {
         return bcrypt.compare(password, this.password);
     }
+    
     private static get newId(): string {
         const baseId = uuid();
         const hash = createHash("md5").update(baseId);

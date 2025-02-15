@@ -8,6 +8,13 @@ export class UserRepository {
         return users.map(user => user.toModel());
     }
 
+    static async findById(id: string): Promise<User | null> {
+        const user = await AppDataSource.getRepository(UserEntity).findOne({
+            where: { id },
+        });
+        return user ? user.toModel() : null;
+    }
+
     static async save(user: User): Promise<void> {
         const entity = new UserEntity();
         entity.loadModel(user);
