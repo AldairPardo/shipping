@@ -1,9 +1,10 @@
-import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn } from "typeorm";
+import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from "typeorm";
 import { UserEntity } from "./user.entity";
 import { ReceiverDto } from "@modules/users/domain/dtos/receiver.dto";
 import { DimensionsDto } from "@modules/shipments/domain/dtos/dimensions.dto";
 import { Shipment } from "@modules/shipments/domain/models/shipment.model";
 import { ShipmentStatus } from "@modules/shipments/domain/enums/status.enum";
+import { ShipmentTrackingEntity } from "./shipment-tracking.entity";
 
 @Entity("shipment")
 export class ShipmentEntity {
@@ -16,6 +17,9 @@ export class ShipmentEntity {
     @ManyToOne(() => UserEntity, (user) => user.shipments)
     @JoinColumn({ name: "sender_id" })
     sender!: UserEntity;
+
+    @OneToMany(() => ShipmentTrackingEntity, (tracking) => tracking.shipment)
+    tracking?: ShipmentTrackingEntity[];
 
     @Column({ type: "json" })
     receiver!: ReceiverDto;
