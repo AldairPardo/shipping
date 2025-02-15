@@ -14,6 +14,10 @@ export class CreateUserDto {
     @IsNotEmpty()
     email!: string;
 
+    @IsPhoneNumber()
+    @IsNotEmpty()
+    phone!: string;
+
     @IsString()
     @IsNotEmpty()
     password!: string;
@@ -22,10 +26,6 @@ export class CreateUserDto {
     @IsEnum(Role)
     role!: Role;
 
-    @IsPhoneNumber()
-    @IsOptional()
-    phone?: string;
-
     @IsString()
     @IsOptional()
     docType?: string;
@@ -33,7 +33,6 @@ export class CreateUserDto {
     @IsString()
     @IsOptional()
     docNumber?: string;
-
 }
 
 export class UserDto extends CreateUserDto {

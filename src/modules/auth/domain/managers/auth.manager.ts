@@ -18,10 +18,10 @@ export class AuthManager {
             dto.firstname,
             dto.lastname,
             dto.email,
+            dto.phone,
             await User.hashPassword(dto.password),
             dto.role,
             {
-                phone: dto.phone,
                 docType: dto.docType,
                 docNumber: dto.docNumber
             }
