@@ -9,8 +9,7 @@ export class Route {
     readonly id: string;
     readonly shipments?: Shipment[];
     readonly tracking?: RouteTracking[];
-    readonly driverId?: string;
-    public startedAt?: Date;
+    public driverId?: string;
     public finishedAt?: Date;
     public isActive!: boolean;
     readonly createdAt: Date;
@@ -18,13 +17,15 @@ export class Route {
 
     constructor(
         readonly cities: CitieDto[],
-        readonly vehicleId: number, 
+        readonly vehicleId: number,
+        public startTime: number,
+        public estimatedHours: number,
+        
         options?: {
             id?: string;
             shipments?: Shipment[];
             tracking?: RouteTracking[];
             driverId?: string;
-            startedAt?: Date;
             finishedAt?: Date;
             isActive?: boolean;
             createdAt?: Date;
@@ -35,7 +36,6 @@ export class Route {
         this.shipments = options?.shipments;
         this.tracking = options?.tracking;
         this.driverId = options?.driverId;
-        this.startedAt = options?.startedAt;
         this.finishedAt = options?.finishedAt;
         this.isActive = options?.isActive ?? false;
         this.createdAt = options?.createdAt ?? new Date();
@@ -50,7 +50,8 @@ export class Route {
             cities: this.cities,
             vehicleId: this.vehicleId,
             driverId: this.driverId,
-            startedAt: this.startedAt,
+            estimatedHours: this.estimatedHours,
+            startTime: this.startTime,
             finishedAt: this.finishedAt,
             isActive: this.isActive,
             createdAt: this.createdAt,
@@ -62,11 +63,12 @@ export class Route {
         return new Route(
             json.cities,
             json.vehicleId,
+            json.startTime,
+            json.estimatedHours,
             {
                 id: json.id,
                 tracking: json.tracking?.map((tracking) => RouteTracking.fromJson(tracking)),
                 driverId: json.driverId,
-                startedAt: json.startedAt,
                 finishedAt: json.finishedAt,
                 isActive: json.isActive,
                 createdAt: json.createdAt,

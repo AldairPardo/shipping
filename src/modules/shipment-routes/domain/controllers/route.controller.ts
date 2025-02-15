@@ -2,6 +2,7 @@ import { Response } from "express";
 import { AuthRequest } from "@utils/middlewares/checkRole.middleware";
 import { RouteDto } from "../dtos/route.dto";
 import { RouteManager } from "../managers/route.manager";
+import { Role } from "@modules/auth/domain/enums/role.enum";
 
 export class RouteController {
     static async createRoute(req: AuthRequest, res: Response) {
@@ -11,6 +12,28 @@ export class RouteController {
             res.status(201).json(route);
         } catch (error) {
             res.status(400).json({ message: error.message });
+        }
+    }
+
+    static async getRoute(req: AuthRequest, res: Response) {
+        try {
+            const { id } = req.params;
+            const driverId = req.user?.role === Role.DRIVER ? req.user.id : undefined;
+            const route = await RouteManager.getRoute(id, driverId);
+            res.json(route);
+        } catch (error) {
+            res.status(error.status || 400).json({ message: error.message });
+        }
+    }
+
+    static async assignDriver(req: AuthRequest, res: Response) {
+        try {
+            const { id } = req.params;
+            const { driverId } = req.body;
+            await RouteManager.updateDriver(id, driverId);
+            res.json({ message: "Driver assigned" });
+        } catch (error) {
+            res.status(error.status || 400).json({ message: error.message });
         }
     }
 }

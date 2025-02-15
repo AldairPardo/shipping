@@ -19,10 +19,10 @@ export class ShipmentController {
     static async getShipment(req: AuthRequest, res: Response) {
         try {
             const { trackingCode } = req.params;
-            const userId = req.user?.role === Role.CUSTOMER ? req.user.id : undefined;
+            const senderId = req.user?.role === Role.CUSTOMER ? req.user.id : undefined;
             const shipment = await ShipmentManager.getShipment(
                 trackingCode,
-                userId
+                senderId
             );
             res.json(shipment);
         } catch (error) {

@@ -8,4 +8,31 @@ export class RouteRepository {
         entity.loadModel(route);
         await AppDataSource.getRepository(RouteEntity).save(entity);
     }
+
+    static async findById(id: string): Promise<Route | undefined> {
+        const entity = await AppDataSource.getRepository(RouteEntity).findOne({
+            where: { id },
+            relations: ["tracking"],
+        });
+        return entity?.toModel();
+    }
+
+    static async findByDriver(driverId: string): Promise<Route[] | undefined> {
+        const entity = await AppDataSource.getRepository(RouteEntity).find({
+            where: { driver_id: driverId },
+            relations: ["tracking"],
+        });
+        return entity?.map((route) => route.toModel());
+    }
+
+    static async update(route: Route): Promise<void> {
+        const entity = new RouteEntity();
+        entity.loadModel(route);
+        await AppDataSource.getRepository(RouteEntity).update(
+            {
+                id: route.id,
+            },
+            entity
+        );
+    }
 }

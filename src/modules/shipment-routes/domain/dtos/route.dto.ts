@@ -22,6 +22,10 @@ export class RouteDto {
     @IsNotEmpty()
     vehicleId!: number;
 
+    @IsNumber()
+    @IsNotEmpty()
+    estimatedHours!: number;
+
     @IsOptional()
     @ValidateNested({ each: true })
     @Type(() => RouteTrackingDto)
@@ -34,8 +38,9 @@ export class RouteDto {
     @IsEmpty()
     isActive?: boolean;
 
-    @IsEmpty()
-    startedAt?: Date;
+    @IsNumber()
+    @IsNotEmpty()
+    startTime!: number;
 
     @IsEmpty()
     finishedAt?: Date;
