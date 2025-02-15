@@ -29,4 +29,15 @@ export class ShipmentController {
             res.status(error.status || 400).json({ message: error.message });
         }
     }
+
+    static async getShipments(req: AuthRequest, res: Response) {
+        try {
+            const shipments = await ShipmentManager.getShipments(
+                req.user?.id as string
+            );
+            res.json(shipments);
+        } catch (error) {
+            res.status(error.status || 400).json({ message: error.message });
+        }
+    }
 }

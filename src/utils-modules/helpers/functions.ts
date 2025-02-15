@@ -6,7 +6,6 @@ const NodeGeocoder = require("node-geocoder");
 
 export async function validateLocation(location: LocationDto): Promise<LocationDto> {
     // Validate city
-    console.log(cities.find((c) => c.keyword === location.city));
     const isValidCity = cities.some(
         (c) => c.keyword === location.city && c.department === location.department
     );
@@ -22,23 +21,34 @@ export async function validateLocation(location: LocationDto): Promise<LocationD
     }
 
     // Validate coordinates
-    // const geocoder = NodeGeocoder({
-    //     provider: process.env.GEOCODER_PROVIDER_NAME,
-    //     apiKey: process.env.GEOCODER_API_KEY, // for Mapquest, OpenCage, Google Premier
-    //     formatter: null,
-    // });
+    const geocoder = NodeGeocoder({
+        provider: process.env.GEOCODER_PROVIDER_NAME,
+        apiKey: process.env.GEOCODER_API_KEY, // for Mapquest, OpenCage, Google Premier
+        formatter: null,
+    });
 
     try {
-        // const [loc] = await geocoder.geocode(`${location.address} ${location.city}`);
-        // console.log("loc", loc);
-        // if (!loc) {
-        //     throw new CustomError("Dirección no encontrada", 400);
-        // }
+        const [loc] = await geocoder.geocode(`${location.address} ${location.city} ${location.department}`);
+        if (!loc) {
+            throw new CustomError("Dirección no encontrada", 400);
+        }
 
-        // location.coords = {
-        //     lat: loc.latitude,
-        //     lng: loc.longitude,
-        // };
+        if (loc.country !== "Colombia") {
+            throw new CustomError("La dirección debe ser en Colombia", 400);
+        }
+
+        if ( loc.state && loc.state !== location.department) {
+            throw new CustomError(`La dirección no pertenece al departamento de ${location.department}`, 400);
+        }
+
+        if ( loc.city && loc.city !== location.city) {
+            throw new CustomError(`La dirección no pertenece a la ciudad de ${location.city}`, 400);
+        }
+
+        location.coords = {
+            lat: loc.latitude,
+            lng: loc.longitude,
+        };
 
         return location;
     } catch (error) {

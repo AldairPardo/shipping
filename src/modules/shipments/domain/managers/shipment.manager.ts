@@ -35,7 +35,6 @@ export class ShipmentManager {
             }
         );
 
-        console.log(shipment.toJson());
         await ShipmentRepository.save(shipment);
         const tracking = new ShipmentTracking(
             shipment.id,
@@ -63,5 +62,10 @@ export class ShipmentManager {
         }
 
         return shipment.toJson();
+    }
+
+    static async getShipments(senderId: string): Promise<ShipmentDto[]> {
+        const shipments = await ShipmentRepository.findBySender(senderId);
+        return shipments.map((shipment) => shipment.toJson());
     }
 }

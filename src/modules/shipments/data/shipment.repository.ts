@@ -21,4 +21,12 @@ export class ShipmentRepository {
         });
         return entity?.toModel();
     }
+
+    static async findBySender( senderId: string): Promise<Shipment[]> {
+        const entities = await AppDataSource.getRepository(ShipmentEntity).find({
+            where: { sender: { id: senderId } },
+            relations: ["sender"],
+        });
+        return entities.map((entity) => entity.toModel());
+    }
 }
