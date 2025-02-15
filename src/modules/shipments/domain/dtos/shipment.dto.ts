@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsOptional, IsNumber, IsDate, ValidateNested, IsEnum } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, IsNumber, IsDate, ValidateNested, IsEnum, IsEmpty } from 'class-validator';
 import { Type } from 'class-transformer';
 import { DimensionsDto } from './dimensions.dto';
 import { ReceiverDto } from '@modules/shipments/domain/dtos/receiver.dto';
@@ -6,7 +6,19 @@ import { SenderDto } from '@modules/shipments/domain/dtos/sender.dto';
 import { ShipmentStatus } from '../enums/status.enum';
 import { LocationDto } from './location.dto';
 
-export class BaseShipmentDto {
+export class ShipmentDto {
+    @IsEmpty()
+    id!: string;
+
+    @IsEmpty()
+    senderId?: string;
+
+    @IsEmpty()
+    sender!: SenderDto;
+
+    @IsEmpty()
+    trackingCode!: string;
+
     @IsNotEmpty()
     @ValidateNested()
     @Type(() => ReceiverDto)
@@ -46,24 +58,4 @@ export class BaseShipmentDto {
     @IsDate()
     @IsOptional()
     updatedAt?: Date;
-}
-
-export class CreateShipmentDto extends BaseShipmentDto {
-    @IsString()
-    @IsOptional()
-    senderId?: string;
-}
-
-export class ShipmentDto extends BaseShipmentDto {
-    @IsString()
-    @IsNotEmpty()
-    id!: string;
-
-    @ValidateNested()
-    @Type(() => SenderDto)
-    sender!: SenderDto;
-
-    @IsString()
-    @IsNotEmpty()
-    trackingCode!: string;
 }

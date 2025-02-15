@@ -1,5 +1,5 @@
 import { Response } from "express";
-import { CreateShipmentDto } from "../dtos/shipment.dto";
+import { ShipmentDto } from "../dtos/shipment.dto";
 import { ShipmentManager } from "../managers/shipment.manager";
 import { AuthRequest } from "@utils/middlewares/checkRole.middleware";
 import { Role } from "@modules/auth/domain/enums/role.enum";
@@ -7,7 +7,7 @@ import { Role } from "@modules/auth/domain/enums/role.enum";
 export class ShipmentController {
     static async createShipment(req: AuthRequest, res: Response) {
         try {
-            const payload: CreateShipmentDto = req.body;
+            const payload: ShipmentDto = req.body;
             payload.senderId = req.user?.id as string;
             const shipment = await ShipmentManager.createShipment(payload);
             res.status(201).json(shipment);

@@ -1,16 +1,15 @@
 import { UserRepository } from "@modules/users/data/user.repository";
 import { CustomError } from "@utils/helpers/customError";
-import { CreateShipmentDto, ShipmentDto } from "../dtos/shipment.dto";
+import { ShipmentDto } from "../dtos/shipment.dto";
 import { Shipment } from "../models/shipment.model";
 import { ShipmentStatus } from "../enums/status.enum";
 import { ShipmentRepository } from "@modules/shipments/data/shipment.repository";
-import { SenderDto } from "@modules/shipments/domain/dtos/sender.dto";
 import { validateLocation } from "@utils/helpers/functions";
 import { ShipmentTrackingRepository } from "@modules/shipments/data/shipment-tracking.repository";
 import { ShipmentTracking } from "../models/shipment-tracking.model";
 
 export class ShipmentManager {
-    static async createShipment(dto: CreateShipmentDto): Promise<ShipmentDto> {
+    static async createShipment(dto: ShipmentDto): Promise<ShipmentDto> {
         const sender = await UserRepository.findById(dto.senderId!);
         if (!sender) {
             throw new CustomError("El remitente no existe", 400);
@@ -22,18 +21,7 @@ export class ShipmentManager {
 
         const senderDto = sender.toSenderJson();
 
-        const shipment = new Shipment(
-            senderDto,
-            dto.receiver,
-            dto.origin,
-            dto.destination,
-            dto.dimensions,
-            dto.declaredValue,
-            ShipmentStatus.PENDING,
-            {
-                description: dto.description,
-            }
-        );
+        const shipment = Shipment.fromJson(dto, senderDto);
 
         await ShipmentRepository.save(shipment);
         const tracking = new ShipmentTracking(

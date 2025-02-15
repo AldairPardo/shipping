@@ -54,9 +54,9 @@ export class Shipment {
         };
     }
 
-    static fromJson(json: ShipmentDto): Shipment {
+    static fromJson(json: ShipmentDto, sender: SenderDto): Shipment {
         return new Shipment(
-            json.sender,
+            sender,
             json.receiver,
             json.origin,
             json.destination,

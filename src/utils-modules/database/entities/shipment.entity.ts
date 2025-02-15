@@ -6,6 +6,7 @@ import { Shipment } from "@modules/shipments/domain/models/shipment.model";
 import { ShipmentStatus } from "@modules/shipments/domain/enums/status.enum";
 import { ShipmentTrackingEntity } from "./shipment-tracking.entity";
 import { LocationDto } from "@modules/shipments/domain/dtos/location.dto";
+import { RouteEntity } from "./route.entity";
 
 @Entity("shipment")
 export class ShipmentEntity {
@@ -46,6 +47,10 @@ export class ShipmentEntity {
         default: ShipmentStatus.PENDING,
     })
     status!: ShipmentStatus;
+
+    @ManyToOne(() => RouteEntity, (route) => route.shipments)
+    @JoinColumn({ name: "route_id" })
+    route?: RouteEntity;
 
     @CreateDateColumn()
     created_at!: Date;
