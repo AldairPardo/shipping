@@ -1,19 +1,19 @@
-import { IsString, IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsNumber } from 'class-validator';
 
 export class DimensionsDto {
-    @IsString()
+    @IsNumber()
     @IsNotEmpty()
-    length!: string;
+    length!: number;
 
-    @IsString()
+    @IsNumber()
     @IsNotEmpty()
-    width!: string;
+    width!: number;
 
-    @IsString()
+    @IsNumber()
     @IsNotEmpty()
-    height!: string;
+    height!: number;
 
-    @IsString()
+    @IsNumber()
     @IsNotEmpty()
-    weight!: string;
+    weight!: number;
 }

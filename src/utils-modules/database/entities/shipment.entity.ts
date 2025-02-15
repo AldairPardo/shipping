@@ -1,10 +1,11 @@
 import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from "typeorm";
 import { UserEntity } from "./user.entity";
-import { ReceiverDto } from "@modules/users/domain/dtos/receiver.dto";
+import { ReceiverDto } from "@modules/shipments/domain/dtos/receiver.dto";
 import { DimensionsDto } from "@modules/shipments/domain/dtos/dimensions.dto";
 import { Shipment } from "@modules/shipments/domain/models/shipment.model";
 import { ShipmentStatus } from "@modules/shipments/domain/enums/status.enum";
 import { ShipmentTrackingEntity } from "./shipment-tracking.entity";
+import { LocationDto } from "@modules/shipments/domain/dtos/location.dto";
 
 @Entity("shipment")
 export class ShipmentEntity {
@@ -26,6 +27,12 @@ export class ShipmentEntity {
 
     @Column({ type: "json" })
     dimensions!: DimensionsDto;
+
+    @Column({ type: "json" })
+    origin!: LocationDto;
+
+    @Column({ type: "json" })
+    destination!: LocationDto;
 
     @Column({ nullable: true })
     description?: string;
@@ -51,6 +58,8 @@ export class ShipmentEntity {
         this.tracking_code = model.trackingCode;
         this.sender = sender;
         this.receiver = model.receiver;
+        this.origin = model.origin;
+        this.destination = model.destination;
         this.dimensions = model.dimensions;
         this.declared_value = model.declaredValue;
         this.status = model.status;
@@ -61,14 +70,16 @@ export class ShipmentEntity {
 
     toModel(): Shipment {
         return new Shipment(
-            this.tracking_code,
-            this.sender.toModel(),
+            this.sender.toModel().toSenderJson(),
             this.receiver,
+            this.origin,
+            this.destination,
             this.dimensions,
             this.declared_value,
             this.status,
             {
                 id: this.id,
+                trackingCode: this.tracking_code,
                 description: this.description,
                 createdAt: this.created_at,
                 updatedAt: this.updated_at,

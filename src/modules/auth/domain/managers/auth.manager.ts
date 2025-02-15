@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import { CreateUserDto } from "@modules/users/domain/dtos/user.dto";
 import { User } from "@modules/users/domain/models/user.model";
 import { UserRepository } from "@modules/users/data/user.repository";
-import { CustomError } from "@utils/helpers";
+import { CustomError } from "@utils/helpers/customError";
 
 dotenv.config();
 

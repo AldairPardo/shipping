@@ -20,6 +20,7 @@
     "strictPropertyInitialization": true,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
+    "resolveJsonModule": true,
     "paths": {
       "@modules/*": [
         "src/modules/*"

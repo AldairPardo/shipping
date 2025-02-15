@@ -3,6 +3,7 @@ import { createHash } from "crypto";
 import bcrypt from "bcrypt";
 import { Role } from "@modules/auth/domain/enums/role.enum";
 import { UserDto } from "../dtos/user.dto";
+import { SenderDto } from "@modules/shipments/domain/dtos/sender.dto";
 
 
 export class User {
@@ -45,6 +46,16 @@ export class User {
             docType: this.docType,
             docNumber: this.docNumber,
             role: this.role,
+        };
+    }
+
+    toSenderJson(): SenderDto {
+        return {
+            id: this.id,
+            firstname: this.firstname,
+            lastname: this.lastname,
+            email: this.email,
+            phone: this.phone,
         };
     }
 

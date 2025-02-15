@@ -32,6 +32,7 @@ export class ShipmentTrackingEntity {
 
     toModel(): ShipmentTracking {
         return new ShipmentTracking(
+            this.shipment.id,
             this.status,
             {
                 id: this.id,

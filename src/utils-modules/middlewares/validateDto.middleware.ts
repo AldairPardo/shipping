@@ -1,11 +1,10 @@
 import { plainToInstance } from "class-transformer";
 import { validate } from "class-validator";
 import { Request, Response, NextFunction } from "express";
-
 export function validateDto<T extends object>(DtoClass: new () => T) {
     return async (req: Request, res: Response, next: NextFunction) => {
         const dtoInstance = plainToInstance(DtoClass, req.body);
-        const errors = await validate(dtoInstance);
+        const errors = await validate(dtoInstance, { whitelist: true, forbidNonWhitelisted: true, validationError: { target: false, value: false } });
 
         if (errors.length > 0) {
             res.status(400).json({
@@ -13,6 +12,10 @@ export function validateDto<T extends object>(DtoClass: new () => T) {
                 errors: errors.map((err) => ({
                     property: err.property,
                     constraints: err.constraints,
+                    children: err.children?.map((child) => ({
+                        property: child.property,
+                        constraints: child.constraints,
+                    })),
                 })),
             });
             return;
