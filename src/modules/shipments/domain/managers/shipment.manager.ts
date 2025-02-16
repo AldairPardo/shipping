@@ -39,7 +39,8 @@ export class ShipmentManager {
 
     static async getShipment(
         trackingCode: string,
-        senderId?: string
+        senderId?: string,
+        driverId?: string
     ): Promise<ShipmentDto> {
         const shipment = await ShipmentRepository.findByTrackingCode(trackingCode);
         if (!shipment) {
@@ -53,6 +54,14 @@ export class ShipmentManager {
             );
         }
 
+        if (driverId && shipment.route?.driverId !== driverId) {
+            throw new CustomError(
+                "No tienes permisos para ver este envío",
+                403
+            );
+        }
+
+        delete shipment.route;
         return shipment.toJson();
     }
 
@@ -76,7 +85,9 @@ export class ShipmentManager {
         this.validateVehicleCapacity(route, shipment);
 
         shipment.route = Route.fromJson(route);
-        shipment.status = ShipmentStatus.IN_TRANSIT;
+        if (route.isActive) {
+            shipment.status = ShipmentStatus.IN_TRANSIT;
+        }
         await ShipmentRepository.save(shipment);
     }
 
@@ -145,5 +156,30 @@ export class ShipmentManager {
         if (currentVolume + newVolume > vehicle!.maxVolume) {
             throw new CustomError("El volumen del envío supera el límite del vehículo", 400);
         }
+    }
+
+    static async updateShipmentStatus(
+        trackingCode: string,
+        status: ShipmentStatus,
+        driverId?: string
+    ): Promise<void> {
+        const shipment = await ShipmentRepository.findByTrackingCode(trackingCode);
+        if (!shipment) {
+            throw new CustomError("El envío no existe", 404);
+        }
+
+        if (driverId && shipment.route?.driverId !== driverId) {
+            throw new CustomError(
+                "No tienes permisos para actualizar el estado de este envío",
+                403
+            );
+        }
+
+        shipment.status = status;
+        await ShipmentRepository.save(shipment);
+
+        await ShipmentTrackingRepository.save(
+            new ShipmentTracking(shipment.id, status)
+        );
     }
 }

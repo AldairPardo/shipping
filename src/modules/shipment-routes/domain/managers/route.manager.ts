@@ -6,6 +6,8 @@ import { CustomError } from "@utils/helpers/customError";
 import { RouteTrackingDto } from "../dtos/route-tracking.dto";
 import { RouteTracking } from "../models/route-tracking.model";
 import vehicles from "@utils/data/vehicles.json";
+import { ShipmentStatus } from "@modules/shipments/domain/enums/status.enum";
+import { ShipmentManager } from "@modules/shipments/domain/managers/shipment.manager";
 
 export class RouteManager {
     static async createRoute(dto: RouteDto): Promise<RouteDto> {
@@ -104,7 +106,9 @@ export class RouteManager {
         tracking: RouteTrackingDto,
         driverId: string
     ): Promise<void> {
-        const route = await RouteRepository.findById(id);
+        const route = await RouteRepository.findById(id, {
+            withShipments: true,
+        });
         if (!route) {
             throw new CustomError("La ruta no existe", 404);
         }
@@ -137,6 +141,9 @@ export class RouteManager {
 
         if (!route.isActive) {
             route.isActive = true;
+            route.shipments?.forEach((shipment) => {
+                ShipmentManager.updateShipmentStatus(shipment.trackingCode, ShipmentStatus.IN_TRANSIT);
+            });
         }
 
         tracking.timestamp = new Date();

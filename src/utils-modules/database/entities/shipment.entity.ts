@@ -85,6 +85,7 @@ export class ShipmentEntity {
             this.status,
             {
                 id: this.id,
+                route: this.route?.toModel(),
                 trackingCode: this.tracking_code,
                 description: this.description,
                 createdAt: this.created_at,
