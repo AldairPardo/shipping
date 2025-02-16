@@ -24,15 +24,4 @@ export class RouteRepository {
         });
         return entity?.map((route) => route.toModel());
     }
-
-    static async update(route: Route): Promise<void> {
-        const entity = new RouteEntity();
-        entity.loadModel(route);
-        await AppDataSource.getRepository(RouteEntity).update(
-            {
-                id: route.id,
-            },
-            entity
-        );
-    }
 }

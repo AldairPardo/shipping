@@ -1,6 +1,9 @@
-import { IsString, IsNotEmpty, IsDate } from 'class-validator';
+import { IsString, IsNotEmpty, IsDate, IsEmpty } from 'class-validator';
 
-export class UpdateRouteTrackingDto {
+export class RouteTrackingDto {
+    @IsEmpty()
+    timestamp!: Date;
+
     @IsString()
     @IsNotEmpty()
     city!: string;
@@ -8,14 +11,4 @@ export class UpdateRouteTrackingDto {
     @IsString()
     @IsNotEmpty()
     department!: string;
-}
-
-export class RouteTrackingDto extends UpdateRouteTrackingDto {
-    @IsString()
-    @IsNotEmpty()
-    routeId!: string;
-
-    @IsDate()
-    @IsNotEmpty()
-    timestamp!: Date;
 }

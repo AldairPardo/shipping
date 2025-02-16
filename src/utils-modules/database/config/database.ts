@@ -4,7 +4,7 @@ import { UserEntity } from "../entities/user.entity";
 import { ShipmentEntity } from "../entities/shipment.entity";
 import { ShipmentTrackingEntity } from "../entities/shipment-tracking.entity";
 import { RouteEntity } from "../entities/route.entity";
-import { RouteTrackingEntity } from "../entities/route-tracking";
+import { RouteTrackingEntity } from "../entities/route-tracking.entity";
 
 dotenv.config();
 

@@ -1,4 +1,11 @@
-import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn, CreateDateColumn } from "typeorm";
+import {
+    Entity,
+    PrimaryColumn,
+    Column,
+    ManyToOne,
+    JoinColumn,
+    CreateDateColumn,
+} from "typeorm";
 import { RouteEntity } from "./route.entity";
 import { RouteTracking } from "@modules/shipment-routes/domain/models/route-tracking.model";
 
@@ -20,23 +27,23 @@ export class RouteTrackingEntity {
     @CreateDateColumn()
     timestamp!: Date;
 
-    loadModel(model: RouteTracking, route: RouteEntity) {
+    static from(model: RouteTracking): RouteTrackingEntity {
+        const entity = new RouteTrackingEntity();
+        entity.loadModel(model);
+        return entity;
+    }
+
+    loadModel(model: RouteTracking) {
         this.id = model.id;
-        this.route = route;
         this.city = model.city;
         this.department = model.department;
         this.timestamp = model.timestamp;
     }
 
     toModel(): RouteTracking {
-        return new RouteTracking(
-            this.route.id,
-            this.city,
-            this.department,
-            {
-                id: this.id,
-                timestamp: this.timestamp,
-            }
-        );
+        return new RouteTracking(this.city, this.department, {
+            id: this.id,
+            timestamp: this.timestamp,
+        });
     }
 }

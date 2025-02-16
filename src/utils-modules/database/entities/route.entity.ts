@@ -7,7 +7,7 @@ import {
     OneToMany,
 } from "typeorm";
 import { ShipmentEntity } from "./shipment.entity";
-import { RouteTrackingEntity } from "./route-tracking";
+import { RouteTrackingEntity } from "./route-tracking.entity";
 import { CitieDto } from "@modules/shipment-routes/domain/dtos/citie.dto";
 import { Route } from "@modules/shipment-routes/domain/models/route.model";
 
@@ -18,7 +18,7 @@ export class RouteEntity {
 
     @Column({ type: "json" })
     cities!: CitieDto[];
-    
+
     @Column({ type: "bigint" })
     start_time!: number;
 
@@ -40,7 +40,9 @@ export class RouteEntity {
     @OneToMany(() => ShipmentEntity, (shipment) => shipment.route)
     shipments?: ShipmentEntity[];
 
-    @OneToMany(() => RouteTrackingEntity, (tracking) => tracking.route)
+    @OneToMany(() => RouteTrackingEntity, (tracking) => tracking.route, {
+        cascade: true,
+    })
     tracking?: RouteTrackingEntity[];
 
     @CreateDateColumn()
@@ -48,6 +50,13 @@ export class RouteEntity {
 
     @UpdateDateColumn()
     updated_at!: Date;
+
+    
+    static from(model: Route): RouteEntity {
+        const entity = new RouteEntity();
+        entity.loadModel(model);
+        return entity;
+    }
 
     loadModel(model: Route) {
         this.id = model.id;
@@ -58,6 +67,7 @@ export class RouteEntity {
         this.driver_id = model.driverId;
         this.estimated_hours = model.estimatedHours;
         this.vehicle_id = model.vehicleId;
+        this.tracking = model.tracking?.map((tracking) => RouteTrackingEntity.from(tracking));
         this.created_at = model.createdAt;
         this.updated_at = model.updatedAt;
     }

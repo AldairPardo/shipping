@@ -7,7 +7,6 @@ export class RouteTracking {
     readonly timestamp: Date;
 
     constructor(
-        readonly routeId: string,
         readonly city: string,
         readonly department: string,
         options?: {
@@ -21,7 +20,6 @@ export class RouteTracking {
 
     toJson(): RouteTrackingDto {
         return {
-            routeId: this.routeId,
             city: this.city,
             department: this.department,
             timestamp: this.timestamp,
@@ -30,7 +28,6 @@ export class RouteTracking {
 
     static fromJson(json: RouteTrackingDto): RouteTracking {
         return new RouteTracking(
-            json.routeId,
             json.city,
             json.department,
             {

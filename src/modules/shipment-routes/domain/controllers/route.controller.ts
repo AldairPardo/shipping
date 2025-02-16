@@ -3,6 +3,7 @@ import { AuthRequest } from "@utils/middlewares/checkRole.middleware";
 import { RouteDto } from "../dtos/route.dto";
 import { RouteManager } from "../managers/route.manager";
 import { Role } from "@modules/auth/domain/enums/role.enum";
+import { RouteTrackingDto } from "../dtos/route-tracking.dto";
 
 export class RouteController {
     static async createRoute(req: AuthRequest, res: Response) {
@@ -32,6 +33,18 @@ export class RouteController {
             const { driverId } = req.body;
             await RouteManager.updateDriver(id, driverId);
             res.json({ message: "Driver assigned" });
+        } catch (error) {
+            res.status(error.status || 400).json({ message: error.message });
+        }
+    }
+
+    static async addTracking(req: AuthRequest, res: Response) {
+        try {
+            const { id } = req.params;
+            const driverId = req.user?.id as string;
+            const routeTracking: RouteTrackingDto = req.body;
+            await RouteManager.addTracking(id, routeTracking, driverId);
+            res.json({ message: "Tracking added" });
         } catch (error) {
             res.status(error.status || 400).json({ message: error.message });
         }

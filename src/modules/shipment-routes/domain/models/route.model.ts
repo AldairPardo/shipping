@@ -8,7 +8,7 @@ import { v1 as uuid } from "uuid";
 export class Route {
     readonly id: string;
     readonly shipments?: Shipment[];
-    readonly tracking?: RouteTracking[];
+    readonly tracking?: RouteTracking[] = [];
     public driverId?: string;
     public finishedAt?: Date;
     public isActive!: boolean;

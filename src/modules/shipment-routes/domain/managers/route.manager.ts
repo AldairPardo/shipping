@@ -3,6 +3,8 @@ import cities from "@utils/data/cities.json";
 import { RouteDto } from "../dtos/route.dto";
 import { Route } from "../models/route.model";
 import { CustomError } from "@utils/helpers/customError";
+import { RouteTrackingDto } from "../dtos/route-tracking.dto";
+import { RouteTracking } from "../models/route-tracking.model";
 
 export class RouteManager {
     static async createRoute(dto: RouteDto): Promise<RouteDto> {
@@ -73,7 +75,7 @@ export class RouteManager {
         }
 
         route.driverId = driverId;
-        await RouteRepository.update(route);
+        await RouteRepository.save(route);
     }
 
     private static isOverlapping(route1: Route, route2: Route): boolean {
@@ -85,6 +87,53 @@ export class RouteManager {
         const route2EndTime =
             Number(route2StartTime) + route2.estimatedHours * 60 * 60 * 1000;
 
-        return route1StartTime < route2EndTime && route1EndTime > route2StartTime;
+        return (
+            route1StartTime < route2EndTime && route1EndTime > route2StartTime
+        );
+    }
+
+    static async addTracking(
+        id: string,
+        tracking: RouteTrackingDto,
+        driverId: string
+    ): Promise<void> {
+        const route = await RouteRepository.findById(id);
+        if (!route) {
+            throw new CustomError("La ruta no existe", 404);
+        }
+
+        // No permitir añadir ciudades a una ruta que no le pertenece
+        if (
+            !route.cities.some(
+                (city) =>
+                    city.city === tracking.city &&
+                    city.department === tracking.department
+            )
+        ) {
+            throw new CustomError("La ciudad no pertenece a la ruta", 400);
+        }
+
+        if (route.driverId !== driverId) {
+            throw new CustomError(
+                "No tienes permisos para agregar tracking a esta ruta",
+                403
+            );
+        }
+
+        if (!route.isActive && route.tracking!.length > 0) {
+            throw new CustomError("La ruta no está activa", 400);
+        }
+
+        if (route.finishedAt) {
+            throw new CustomError("La ruta ya ha finalizado", 400);
+        }
+
+        if (!route.isActive) {
+            route.isActive = true;
+        }
+
+        tracking.timestamp = new Date();
+        route.tracking!.push(RouteTracking.fromJson(tracking));
+        await RouteRepository.save(route);
     }
 }
