@@ -10,7 +10,7 @@ import { ShipmentTrackingDto } from './shipment-tracking.dto';
 
 export class ShipmentDto {
     @IsEmpty()
-    id!: string;
+    id?: string;
 
     @IsEmpty()
     senderId?: string;

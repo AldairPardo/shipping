@@ -690,9 +690,6 @@
                 "city": {
                     "type": "string"
                 },
-                "coords": {
-                    "$ref": "#/definitions/Coords"
-                },
                 "department": {
                     "type": "string"
                 }
@@ -901,44 +898,11 @@
                     },
                     "type": "array"
                 },
-                "createdAt": {
-                    "format": "date-time",
-                    "type": "string"
-                },
-                "driverId": {
-                    "type": "string"
-                },
                 "estimatedHours": {
                     "type": "number"
                 },
-                "finishedAt": {
-                    "format": "date-time",
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "isActive": {
-                    "type": "boolean"
-                },
-                "shipments": {
-                    "items": {
-                        "$ref": "#/definitions/ShipmentDto"
-                    },
-                    "type": "array"
-                },
                 "startTime": {
                     "type": "number"
-                },
-                "tracking": {
-                    "items": {
-                        "$ref": "#/definitions/RouteTrackingDto"
-                    },
-                    "type": "array"
-                },
-                "updatedAt": {
-                    "format": "date-time",
-                    "type": "string"
                 },
                 "vehicleId": {
                     "type": "number"
@@ -946,10 +910,8 @@
             },
             "required": [
                 "cities",
-                "createdAt",
                 "estimatedHours",
                 "startTime",
-                "updatedAt",
                 "vehicleId"
             ],
             "type": "object"
@@ -1339,10 +1301,6 @@
         },
         "ShipmentDto": {
             "properties": {
-                "createdAt": {
-                    "format": "date-time",
-                    "type": "string"
-                },
                 "declaredValue": {
                     "type": "number"
                 },
@@ -1355,51 +1313,19 @@
                 "dimensions": {
                     "$ref": "#/definitions/DimensionsDto"
                 },
-                "id": {
-                    "type": "string"
-                },
                 "origin": {
                     "$ref": "#/definitions/LocationDto"
                 },
                 "receiver": {
                     "$ref": "#/definitions/ReceiverDto"
-                },
-                "route": {
-                    "$ref": "#/definitions/RouteDto"
-                },
-                "sender": {
-                    "$ref": "#/definitions/SenderDto"
-                },
-                "senderId": {
-                    "type": "string"
-                },
-                "status": {
-                    "$ref": "#/definitions/ShipmentStatus"
-                },
-                "tracking": {
-                    "items": {
-                        "$ref": "#/definitions/ShipmentTrackingDto"
-                    },
-                    "type": "array"
-                },
-                "trackingCode": {
-                    "type": "string"
-                },
-                "updatedAt": {
-                    "format": "date-time",
-                    "type": "string"
                 }
             },
             "required": [
                 "declaredValue",
                 "destination",
                 "dimensions",
-                "id",
                 "origin",
-                "receiver",
-                "sender",
-                "status",
-                "trackingCode"
+                "receiver"
             ],
             "type": "object"
         },
