@@ -17,7 +17,7 @@ export class ShipmentRepository {
             ShipmentEntity
         ).findOne({
             where: { tracking_code: trackingCode },
-            relations: ["sender"],
+            relations: ["sender","route"],
         });
         return entity?.toModel();
     }

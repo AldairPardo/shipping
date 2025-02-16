@@ -9,10 +9,15 @@ export class RouteRepository {
         await AppDataSource.getRepository(RouteEntity).save(entity);
     }
 
-    static async findById(id: string): Promise<Route | undefined> {
+    static async findById(id: string, options?: {
+        withShipments?: boolean;
+    }): Promise<Route | undefined> {
         const entity = await AppDataSource.getRepository(RouteEntity).findOne({
             where: { id },
-            relations: ["tracking"],
+            relations: {
+                tracking: true,
+                shipments: options?.withShipments,
+            },
         });
         return entity?.toModel();
     }

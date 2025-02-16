@@ -12,9 +12,11 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "express": "^4.21.2",
+    "ioredis": "^5.5.0",
     "jsonwebtoken": "^9.0.2",
     "mysql": "^2.18.1",
     "node-geocoder": "^4.4.1",
+    "redis": "^4.7.0",
     "shipping": "file:",
     "typeorm": "^0.3.20"
   },
