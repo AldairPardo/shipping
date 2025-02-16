@@ -225,7 +225,7 @@ export class ShipmentManager {
     }
 
     static async getDashboard(filter: FilterDto, type: MetricsType) {
-        const queryKey = `shipments:${createHash("md5")
+        const queryKey = `shipments:${type}:${createHash("md5")
             .update(JSON.stringify(filter))
             .digest("hex")}`;
 

@@ -4,17 +4,13 @@ import { AuthRoutes } from "@modules/auth/domain/routes/auth.routes";
 import { ShipmentRoutes } from "@modules/shipments/domain/routes/shipment.routes";
 import { RouteRoutes } from "@modules/shipment-routes/domain/routes/route.routes";
 import redisClient from "@utils/database/config/redisClient";
+import { setupSwagger } from "@utils/swagger/swagger";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware para parsear JSON
 app.use(express.json());
-
-// Ruta de prueba
-app.get("/", (req, res) => {
-    res.send("¡Servidor en Express con TypeScript funcionando! 🚀");
-});
 
 // Rutas
 app.use("/auth", AuthRoutes);
@@ -35,6 +31,9 @@ async function startServer() {
         app.listen(PORT, () => {
             console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
         });
+
+        // Inicializar Swagger
+        setupSwagger(app);
     } catch (error) {
         console.error("❌ Error al iniciar la aplicación:", error);
         process.exit(1); // Detiene la aplicación si hay error

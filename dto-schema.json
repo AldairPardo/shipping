@@ -1,0 +1,1971 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "definitions": {
+        "Role": {
+            "enum": [
+                "admin",
+                "customer",
+                "driver"
+            ],
+            "type": "string"
+        },
+        "AssignShipmentDto": {
+            "properties": {
+                "routeId": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "routeId"
+            ],
+            "type": "object"
+        },
+        "AuthController": {
+            "type": "object"
+        },
+        "AuthManager": {
+            "type": "object"
+        },
+        "AuthRequest": {
+            "properties": {
+                "aborted": {
+                    "description": "The `message.aborted` property will be `true` if the request has\nbeen aborted.",
+                    "type": "boolean"
+                },
+                "accepted": {
+                    "description": "Return an array of Accepted media types\nordered from highest quality to lowest.",
+                    "items": {
+                        "$ref": "#/definitions/MediaType"
+                    },
+                    "type": "array"
+                },
+                "app": {
+                    "$ref": "#/definitions/Application<Record<string,any>>"
+                },
+                "baseUrl": {
+                    "type": "string"
+                },
+                "body": {},
+                "closed": {
+                    "description": "Is `true` after `'close'` has been emitted.",
+                    "type": "boolean"
+                },
+                "complete": {
+                    "description": "The `message.complete` property will be `true` if a complete HTTP message has\nbeen received and successfully parsed.\n\nThis property is particularly useful as a means of determining if a client or\nserver fully transmitted a message before a connection was terminated:\n\n```js\nconst req = http.request({\n  host: '127.0.0.1',\n  port: 8080,\n  method: 'POST',\n}, (res) => {\n  res.resume();\n  res.on('end', () => {\n    if (!res.complete)\n      console.error(\n        'The connection was terminated while the message was still being sent');\n  });\n});\n```",
+                    "type": "boolean"
+                },
+                "connection": {
+                    "$ref": "#/definitions/Socket",
+                    "description": "Alias for `message.socket`."
+                },
+                "cookies": {},
+                "destroyed": {
+                    "description": "Is `true` after `readable.destroy()` has been called.",
+                    "type": "boolean"
+                },
+                "errored": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/Error"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "Returns error if the stream has been destroyed with an error."
+                },
+                "fresh": {
+                    "description": "Check if the request is fresh, aka\nLast-Modified and/or the ETag\nstill match.",
+                    "type": "boolean"
+                },
+                "headers": {
+                    "$ref": "#/definitions/IncomingHttpHeaders",
+                    "description": "The request/response headers object.\n\nKey-value pairs of header names and values. Header names are lower-cased.\n\n```js\n// Prints something like:\n//\n// { 'user-agent': 'curl/7.22.0',\n//   host: '127.0.0.1:8000',\n//   accept: '*' }\nconsole.log(request.headers);\n```\n\nDuplicates in raw headers are handled in the following ways, depending on the\nheader name:\n\n* Duplicates of `age`, `authorization`, `content-length`, `content-type`, `etag`, `expires`, `from`, `host`, `if-modified-since`, `if-unmodified-since`, `last-modified`, `location`,\n`max-forwards`, `proxy-authorization`, `referer`, `retry-after`, `server`, or `user-agent` are discarded.\nTo allow duplicate values of the headers listed above to be joined,\nuse the option `joinDuplicateHeaders` in {@link request} and {@link createServer}. See RFC 9110 Section 5.3 for more\ninformation.\n* `set-cookie` is always an array. Duplicates are added to the array.\n* For duplicate `cookie` headers, the values are joined together with `; `.\n* For all other headers, the values are joined together with `, `."
+                },
+                "headersDistinct": {
+                    "$ref": "#/definitions/NodeJS.Dict<string[]>",
+                    "description": "Similar to `message.headers`, but there is no join logic and the values are\nalways arrays of strings, even for headers received just once.\n\n```js\n// Prints something like:\n//\n// { 'user-agent': ['curl/7.22.0'],\n//   host: ['127.0.0.1:8000'],\n//   accept: ['*'] }\nconsole.log(request.headersDistinct);\n```"
+                },
+                "host": {
+                    "description": "Contains the host derived from the `Host` HTTP header.",
+                    "type": "string"
+                },
+                "hostname": {
+                    "description": "Contains the hostname derived from the `Host` HTTP header.",
+                    "type": "string"
+                },
+                "httpVersion": {
+                    "description": "In case of server request, the HTTP version sent by the client. In the case of\nclient response, the HTTP version of the connected-to server.\nProbably either `'1.1'` or `'1.0'`.\n\nAlso `message.httpVersionMajor` is the first integer and `message.httpVersionMinor` is the second.",
+                    "type": "string"
+                },
+                "httpVersionMajor": {
+                    "type": "number"
+                },
+                "httpVersionMinor": {
+                    "type": "number"
+                },
+                "ip": {
+                    "description": "Return the remote address, or when\n\"trust proxy\" is `true` return\nthe upstream addr.\n\nValue may be undefined if the `req.socket` is destroyed\n(for example, if the client disconnected).",
+                    "type": "string"
+                },
+                "ips": {
+                    "description": "When \"trust proxy\" is `true`, parse\nthe \"X-Forwarded-For\" ip address list.\n\nFor example if the value were \"client, proxy1, proxy2\"\nyou would receive the array `[\"client\", \"proxy1\", \"proxy2\"]`\nwhere \"proxy2\" is the furthest down-stream.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "method": {
+                    "description": "**Only valid for request obtained from {@link Server}.**\n\nThe request method as a string. Read only. Examples: `'GET'`, `'DELETE'`.",
+                    "type": "string"
+                },
+                "next": {
+                    "$ref": "#/definitions/NextFunction"
+                },
+                "originalUrl": {
+                    "type": "string"
+                },
+                "params": {
+                    "$ref": "#/definitions/ParamsDictionary"
+                },
+                "path": {
+                    "description": "Short-hand for `url.parse(req.url).pathname`.",
+                    "type": "string"
+                },
+                "protocol": {
+                    "description": "Return the protocol string \"http\" or \"https\"\nwhen requested with TLS. When the \"trust proxy\"\nsetting is enabled the \"X-Forwarded-Proto\" header\nfield will be trusted. If you're running behind\na reverse proxy that supplies https for you this\nmay be enabled.",
+                    "type": "string"
+                },
+                "query": {
+                    "$ref": "#/definitions/qs.ParsedQs"
+                },
+                "rawHeaders": {
+                    "description": "The raw request/response headers list exactly as they were received.\n\nThe keys and values are in the same list. It is _not_ a\nlist of tuples. So, the even-numbered offsets are key values, and the\nodd-numbered offsets are the associated values.\n\nHeader names are not lowercased, and duplicates are not merged.\n\n```js\n// Prints something like:\n//\n// [ 'user-agent',\n//   'this is invalid because there can be only one',\n//   'User-Agent',\n//   'curl/7.22.0',\n//   'Host',\n//   '127.0.0.1:8000',\n//   'ACCEPT',\n//   '*' ]\nconsole.log(request.rawHeaders);\n```",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "rawTrailers": {
+                    "description": "The raw request/response trailer keys and values exactly as they were\nreceived. Only populated at the `'end'` event.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "readable": {
+                    "description": "Is `true` if it is safe to call {@link read}, which means\nthe stream has not been destroyed or emitted `'error'` or `'end'`.",
+                    "type": "boolean"
+                },
+                "readableAborted": {
+                    "description": "Returns whether the stream was destroyed or errored before emitting `'end'`.",
+                    "type": "boolean"
+                },
+                "readableDidRead": {
+                    "description": "Returns whether `'data'` has been emitted.",
+                    "type": "boolean"
+                },
+                "readableEncoding": {
+                    "anyOf": [
+                        {
+                            "enum": [
+                                "ascii",
+                                "base64",
+                                "base64url",
+                                "binary",
+                                "hex",
+                                "latin1",
+                                "ucs-2",
+                                "ucs2",
+                                "utf-16le",
+                                "utf-8",
+                                "utf16le",
+                                "utf8"
+                            ],
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "Getter for the property `encoding` of a given `Readable` stream. The `encoding` property can be set using the {@link setEncoding} method."
+                },
+                "readableEnded": {
+                    "description": "Becomes `true` when [`'end'`](https://nodejs.org/docs/latest-v22.x/api/stream.html#event-end) event is emitted.",
+                    "type": "boolean"
+                },
+                "readableFlowing": {
+                    "description": "This property reflects the current state of a `Readable` stream as described\nin the [Three states](https://nodejs.org/docs/latest-v22.x/api/stream.html#three-states) section.",
+                    "type": [
+                        "null",
+                        "boolean"
+                    ]
+                },
+                "readableHighWaterMark": {
+                    "description": "Returns the value of `highWaterMark` passed when creating this `Readable`.",
+                    "type": "number"
+                },
+                "readableLength": {
+                    "description": "This property contains the number of bytes (or objects) in the queue\nready to be read. The value provides introspection data regarding\nthe status of the `highWaterMark`.",
+                    "type": "number"
+                },
+                "readableObjectMode": {
+                    "description": "Getter for the property `objectMode` of a given `Readable` stream.",
+                    "type": "boolean"
+                },
+                "res": {
+                    "$ref": "#/definitions/Response<any,Record<string,any>,number>",
+                    "description": "After middleware.init executed, Request will contain res and next properties\nSee: express/lib/middleware/init.js"
+                },
+                "route": {},
+                "secure": {
+                    "description": "Short-hand for:\n\n   req.protocol == 'https'",
+                    "type": "boolean"
+                },
+                "signedCookies": {},
+                "socket": {
+                    "$ref": "#/definitions/Socket",
+                    "description": "The `net.Socket` object associated with the connection.\n\nWith HTTPS support, use `request.socket.getPeerCertificate()` to obtain the\nclient's authentication details.\n\nThis property is guaranteed to be an instance of the `net.Socket` class,\na subclass of `stream.Duplex`, unless the user specified a socket\ntype other than `net.Socket` or internally nulled."
+                },
+                "stale": {
+                    "description": "Check if the request is stale, aka\n\"Last-Modified\" and / or the \"ETag\" for the\nresource has changed.",
+                    "type": "boolean"
+                },
+                "statusCode": {
+                    "description": "**Only valid for response obtained from {@link ClientRequest}.**\n\nThe 3-digit HTTP response status code. E.G. `404`.",
+                    "type": "number"
+                },
+                "statusMessage": {
+                    "description": "**Only valid for response obtained from {@link ClientRequest}.**\n\nThe HTTP response status message (reason phrase). E.G. `OK` or `Internal Server Error`.",
+                    "type": "string"
+                },
+                "subdomains": {
+                    "description": "Return subdomains as an array.\n\nSubdomains are the dot-separated parts of the host before the main domain of\nthe app. By default, the domain of the app is assumed to be the last two\nparts of the host. This can be changed by setting \"subdomain offset\".\n\nFor example, if the domain is \"tobi.ferrets.example.com\":\nIf \"subdomain offset\" is not set, req.subdomains is `[\"ferrets\", \"tobi\"]`.\nIf \"subdomain offset\" is 3, req.subdomains is `[\"tobi\"]`.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "trailers": {
+                    "$ref": "#/definitions/NodeJS.Dict<string>",
+                    "description": "The request/response trailers object. Only populated at the `'end'` event."
+                },
+                "trailersDistinct": {
+                    "$ref": "#/definitions/NodeJS.Dict<string[]>",
+                    "description": "Similar to `message.trailers`, but there is no join logic and the values are\nalways arrays of strings, even for headers received just once.\nOnly populated at the `'end'` event."
+                },
+                "url": {
+                    "description": "**Only valid for request obtained from {@link Server}.**\n\nRequest URL string. This contains only the URL that is present in the actual\nHTTP request. Take the following request:\n\n```http\nGET /status?name=ryan HTTP/1.1\nAccept: text/plain\n```\n\nTo parse the URL into its parts:\n\n```js\nnew URL(`http://${process.env.HOST ?? 'localhost'}${request.url}`);\n```\n\nWhen `request.url` is `'/status?name=ryan'` and `process.env.HOST` is undefined:\n\n```console\n$ node\n> new URL(`http://${process.env.HOST ?? 'localhost'}${request.url}`);\nURL {\n  href: 'http://localhost/status?name=ryan',\n  origin: 'http://localhost',\n  protocol: 'http:',\n  username: '',\n  password: '',\n  host: 'localhost',\n  hostname: 'localhost',\n  port: '',\n  pathname: '/status',\n  search: '?name=ryan',\n  searchParams: URLSearchParams { 'name' => 'ryan' },\n  hash: ''\n}\n```\n\nEnsure that you set `process.env.HOST` to the server's host name, or consider replacing this part entirely. If using `req.headers.host`, ensure proper\nvalidation is used, as clients may specify a custom `Host` header.",
+                    "type": "string"
+                },
+                "user": {
+                    "properties": {
+                        "id": {
+                            "type": "string"
+                        },
+                        "role": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "id",
+                        "role"
+                    ],
+                    "type": "object"
+                },
+                "xhr": {
+                    "description": "Check if the request was an _XMLHttpRequest_.",
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "aborted",
+                "accepted",
+                "app",
+                "baseUrl",
+                "body",
+                "closed",
+                "complete",
+                "connection",
+                "cookies",
+                "destroyed",
+                "errored",
+                "fresh",
+                "headers",
+                "headersDistinct",
+                "host",
+                "hostname",
+                "httpVersion",
+                "httpVersionMajor",
+                "httpVersionMinor",
+                "ip",
+                "ips",
+                "method",
+                "originalUrl",
+                "params",
+                "path",
+                "protocol",
+                "query",
+                "rawHeaders",
+                "rawTrailers",
+                "readable",
+                "readableAborted",
+                "readableDidRead",
+                "readableEncoding",
+                "readableEnded",
+                "readableFlowing",
+                "readableHighWaterMark",
+                "readableLength",
+                "readableObjectMode",
+                "route",
+                "secure",
+                "signedCookies",
+                "socket",
+                "stale",
+                "subdomains",
+                "trailers",
+                "trailersDistinct",
+                "url",
+                "xhr"
+            ],
+            "type": "object"
+        },
+        "CitieDto": {
+            "properties": {
+                "city": {
+                    "type": "string"
+                },
+                "department": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "city",
+                "department"
+            ],
+            "type": "object"
+        },
+        "Coords": {
+            "properties": {
+                "lat": {
+                    "type": "string"
+                },
+                "lng": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "lat",
+                "lng"
+            ],
+            "type": "object"
+        },
+        "CreateUserDto": {
+            "properties": {
+                "docNumber": {
+                    "type": "string"
+                },
+                "docType": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "firstname": {
+                    "type": "string"
+                },
+                "lastname": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "role": {
+                    "$ref": "#/definitions/Role"
+                }
+            },
+            "required": [
+                "email",
+                "firstname",
+                "lastname",
+                "password",
+                "phone",
+                "role"
+            ],
+            "type": "object"
+        },
+        "CustomError": {
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "stack": {
+                    "type": "string"
+                },
+                "statusCode": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "message",
+                "name",
+                "statusCode"
+            ],
+            "type": "object"
+        },
+        "DimensionsDto": {
+            "properties": {
+                "height": {
+                    "type": "number"
+                },
+                "length": {
+                    "type": "number"
+                },
+                "weight": {
+                    "type": "number"
+                },
+                "width": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "height",
+                "length",
+                "weight",
+                "width"
+            ],
+            "type": "object"
+        },
+        "Error": {
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "stack": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "message",
+                "name"
+            ],
+            "type": "object"
+        },
+        "FilterDto": {
+            "properties": {
+                "driverName": {
+                    "type": "string"
+                },
+                "endDate": {
+                    "type": "number"
+                },
+                "startDate": {
+                    "type": "number"
+                },
+                "status": {
+                    "enum": [
+                        "En espera",
+                        "En tránsito",
+                        "Entregado"
+                    ],
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "IncomingHttpHeaders": {
+            "properties": {
+                "accept": {
+                    "type": "string"
+                },
+                "accept-language": {
+                    "type": "string"
+                },
+                "accept-patch": {
+                    "type": "string"
+                },
+                "accept-ranges": {
+                    "type": "string"
+                },
+                "access-control-allow-credentials": {
+                    "type": "string"
+                },
+                "access-control-allow-headers": {
+                    "type": "string"
+                },
+                "access-control-allow-methods": {
+                    "type": "string"
+                },
+                "access-control-allow-origin": {
+                    "type": "string"
+                },
+                "access-control-expose-headers": {
+                    "type": "string"
+                },
+                "access-control-max-age": {
+                    "type": "string"
+                },
+                "access-control-request-headers": {
+                    "type": "string"
+                },
+                "access-control-request-method": {
+                    "type": "string"
+                },
+                "age": {
+                    "type": "string"
+                },
+                "allow": {
+                    "type": "string"
+                },
+                "alt-svc": {
+                    "type": "string"
+                },
+                "authorization": {
+                    "type": "string"
+                },
+                "cache-control": {
+                    "type": "string"
+                },
+                "connection": {
+                    "type": "string"
+                },
+                "content-disposition": {
+                    "type": "string"
+                },
+                "content-encoding": {
+                    "type": "string"
+                },
+                "content-language": {
+                    "type": "string"
+                },
+                "content-length": {
+                    "type": "string"
+                },
+                "content-location": {
+                    "type": "string"
+                },
+                "content-range": {
+                    "type": "string"
+                },
+                "content-type": {
+                    "type": "string"
+                },
+                "cookie": {
+                    "type": "string"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "etag": {
+                    "type": "string"
+                },
+                "expect": {
+                    "type": "string"
+                },
+                "expires": {
+                    "type": "string"
+                },
+                "forwarded": {
+                    "type": "string"
+                },
+                "from": {
+                    "type": "string"
+                },
+                "host": {
+                    "type": "string"
+                },
+                "if-match": {
+                    "type": "string"
+                },
+                "if-modified-since": {
+                    "type": "string"
+                },
+                "if-none-match": {
+                    "type": "string"
+                },
+                "if-unmodified-since": {
+                    "type": "string"
+                },
+                "last-modified": {
+                    "type": "string"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "origin": {
+                    "type": "string"
+                },
+                "pragma": {
+                    "type": "string"
+                },
+                "proxy-authenticate": {
+                    "type": "string"
+                },
+                "proxy-authorization": {
+                    "type": "string"
+                },
+                "public-key-pins": {
+                    "type": "string"
+                },
+                "range": {
+                    "type": "string"
+                },
+                "referer": {
+                    "type": "string"
+                },
+                "retry-after": {
+                    "type": "string"
+                },
+                "sec-websocket-accept": {
+                    "type": "string"
+                },
+                "sec-websocket-extensions": {
+                    "type": "string"
+                },
+                "sec-websocket-key": {
+                    "type": "string"
+                },
+                "sec-websocket-protocol": {
+                    "type": "string"
+                },
+                "sec-websocket-version": {
+                    "type": "string"
+                },
+                "set-cookie": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "strict-transport-security": {
+                    "type": "string"
+                },
+                "tk": {
+                    "type": "string"
+                },
+                "trailer": {
+                    "type": "string"
+                },
+                "transfer-encoding": {
+                    "type": "string"
+                },
+                "upgrade": {
+                    "type": "string"
+                },
+                "user-agent": {
+                    "type": "string"
+                },
+                "vary": {
+                    "type": "string"
+                },
+                "via": {
+                    "type": "string"
+                },
+                "warning": {
+                    "type": "string"
+                },
+                "www-authenticate": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "Locals": {
+            "type": "object"
+        },
+        "LocationDto": {
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "coords": {
+                    "$ref": "#/definitions/Coords"
+                },
+                "department": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "address",
+                "city",
+                "department"
+            ],
+            "type": "object"
+        },
+        "MediaType": {
+            "properties": {
+                "quality": {
+                    "type": "number"
+                },
+                "subtype": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "quality",
+                "subtype",
+                "type",
+                "value"
+            ],
+            "type": "object"
+        },
+        "MetricsType": {
+            "enum": [
+                "shipments",
+                "drivers"
+            ],
+            "type": "string"
+        },
+        "NextFunction": {
+            "type": "object"
+        },
+        "NodeJS.Dict<string>": {
+            "additionalProperties": {
+                "$ref": "#/definitions/T"
+            },
+            "type": "object"
+        },
+        "NodeJS.Dict<string[]>": {
+            "additionalProperties": {
+                "$ref": "#/definitions/T"
+            },
+            "type": "object"
+        },
+        "ParamsDictionary": {
+            "additionalProperties": {
+                "type": "string"
+            },
+            "type": "object"
+        },
+        "ReceiverDto": {
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "firstname": {
+                    "type": "string"
+                },
+                "lastname": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "firstname",
+                "lastname",
+                "phone"
+            ],
+            "type": "object"
+        },
+        "Record<string,any>": {
+            "type": "object"
+        },
+        "RegExp": {
+            "properties": {
+                "dotAll": {
+                    "type": "boolean"
+                },
+                "flags": {
+                    "type": "string"
+                },
+                "global": {
+                    "type": "boolean"
+                },
+                "ignoreCase": {
+                    "type": "boolean"
+                },
+                "lastIndex": {
+                    "type": "number"
+                },
+                "multiline": {
+                    "type": "boolean"
+                },
+                "source": {
+                    "type": "string"
+                },
+                "sticky": {
+                    "type": "boolean"
+                },
+                "unicode": {
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "dotAll",
+                "flags",
+                "global",
+                "ignoreCase",
+                "lastIndex",
+                "multiline",
+                "source",
+                "sticky",
+                "unicode"
+            ],
+            "type": "object"
+        },
+        "Route": {
+            "properties": {
+                "cities": {
+                    "items": {
+                        "$ref": "#/definitions/CitieDto"
+                    },
+                    "type": "array"
+                },
+                "createdAt": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "driverId": {
+                    "type": "string"
+                },
+                "estimatedHours": {
+                    "type": "number"
+                },
+                "finishedAt": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "isActive": {
+                    "type": "boolean"
+                },
+                "lastTracking": {
+                    "$ref": "#/definitions/RouteTracking"
+                },
+                "shipments": {
+                    "items": {
+                        "$ref": "#/definitions/Shipment"
+                    },
+                    "type": "array"
+                },
+                "startTime": {
+                    "type": "number"
+                },
+                "tracking": {
+                    "default": [],
+                    "items": {
+                        "$ref": "#/definitions/RouteTracking"
+                    },
+                    "type": "array"
+                },
+                "updatedAt": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "vehicleId": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "cities",
+                "createdAt",
+                "estimatedHours",
+                "id",
+                "isActive",
+                "startTime",
+                "updatedAt",
+                "vehicleId"
+            ],
+            "type": "object"
+        },
+        "RouteController": {
+            "type": "object"
+        },
+        "RouteDto": {
+            "properties": {
+                "cities": {
+                    "items": {
+                        "$ref": "#/definitions/CitieDto"
+                    },
+                    "type": "array"
+                },
+                "createdAt": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "driverId": {
+                    "type": "string"
+                },
+                "estimatedHours": {
+                    "type": "number"
+                },
+                "finishedAt": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "isActive": {
+                    "type": "boolean"
+                },
+                "shipments": {
+                    "items": {
+                        "$ref": "#/definitions/ShipmentDto"
+                    },
+                    "type": "array"
+                },
+                "startTime": {
+                    "type": "number"
+                },
+                "tracking": {
+                    "items": {
+                        "$ref": "#/definitions/RouteTrackingDto"
+                    },
+                    "type": "array"
+                },
+                "updatedAt": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "vehicleId": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "cities",
+                "createdAt",
+                "estimatedHours",
+                "startTime",
+                "updatedAt",
+                "vehicleId"
+            ],
+            "type": "object"
+        },
+        "RouteEntity": {
+            "properties": {
+                "cities": {
+                    "items": {
+                        "$ref": "#/definitions/CitieDto"
+                    },
+                    "type": "array"
+                },
+                "created_at": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "driver_id": {
+                    "type": "string"
+                },
+                "estimated_hours": {
+                    "type": "number"
+                },
+                "finished_at": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "is_active": {
+                    "type": "boolean"
+                },
+                "shipments": {
+                    "items": {
+                        "$ref": "#/definitions/ShipmentEntity"
+                    },
+                    "type": "array"
+                },
+                "start_time": {
+                    "type": "number"
+                },
+                "tracking": {
+                    "items": {
+                        "$ref": "#/definitions/RouteTrackingEntity"
+                    },
+                    "type": "array"
+                },
+                "updated_at": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "vehicle_id": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "cities",
+                "created_at",
+                "estimated_hours",
+                "id",
+                "is_active",
+                "start_time",
+                "updated_at",
+                "vehicle_id"
+            ],
+            "type": "object"
+        },
+        "RouteManager": {
+            "type": "object"
+        },
+        "RouteRepository": {
+            "type": "object"
+        },
+        "RouteTracking": {
+            "properties": {
+                "city": {
+                    "type": "string"
+                },
+                "department": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "timestamp": {
+                    "format": "date-time",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "city",
+                "department",
+                "id",
+                "timestamp"
+            ],
+            "type": "object"
+        },
+        "RouteTrackingDto": {
+            "properties": {
+                "city": {
+                    "type": "string"
+                },
+                "department": {
+                    "type": "string"
+                },
+                "timestamp": {
+                    "format": "date-time",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "city",
+                "department",
+                "timestamp"
+            ],
+            "type": "object"
+        },
+        "RouteTrackingEntity": {
+            "properties": {
+                "city": {
+                    "type": "string"
+                },
+                "department": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "route": {
+                    "$ref": "#/definitions/RouteEntity"
+                },
+                "timestamp": {
+                    "format": "date-time",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "city",
+                "department",
+                "id",
+                "route",
+                "timestamp"
+            ],
+            "type": "object"
+        },
+        "Router": {
+            "properties": {
+                "all": {
+                    "$ref": "#/definitions/IRouterMatcher<Router,\"all\">",
+                    "description": "Special-cased \"all\" method, applying the given route `path`,\nmiddleware, and callback to _every_ HTTP method."
+                },
+                "checkout": {
+                    "$ref": "#/definitions/IRouterMatcher<Router,any>"
+                },
+                "connect": {
+                    "$ref": "#/definitions/IRouterMatcher<Router,any>"
+                },
+                "copy": {
+                    "$ref": "#/definitions/IRouterMatcher<Router,any>"
+                },
+                "delete": {
+                    "$ref": "#/definitions/IRouterMatcher<Router,\"delete\">"
+                },
+                "get": {
+                    "$ref": "#/definitions/IRouterMatcher<Router,\"get\">"
+                },
+                "head": {
+                    "$ref": "#/definitions/IRouterMatcher<Router,\"head\">"
+                },
+                "link": {
+                    "$ref": "#/definitions/IRouterMatcher<Router,any>"
+                },
+                "lock": {
+                    "$ref": "#/definitions/IRouterMatcher<Router,any>"
+                },
+                "m-search": {
+                    "$ref": "#/definitions/IRouterMatcher<Router,any>"
+                },
+                "merge": {
+                    "$ref": "#/definitions/IRouterMatcher<Router,any>"
+                },
+                "mkactivity": {
+                    "$ref": "#/definitions/IRouterMatcher<Router,any>"
+                },
+                "mkcol": {
+                    "$ref": "#/definitions/IRouterMatcher<Router,any>"
+                },
+                "move": {
+                    "$ref": "#/definitions/IRouterMatcher<Router,any>"
+                },
+                "notify": {
+                    "$ref": "#/definitions/IRouterMatcher<Router,any>"
+                },
+                "options": {
+                    "$ref": "#/definitions/IRouterMatcher<Router,\"options\">"
+                },
+                "patch": {
+                    "$ref": "#/definitions/IRouterMatcher<Router,\"patch\">"
+                },
+                "post": {
+                    "$ref": "#/definitions/IRouterMatcher<Router,\"post\">"
+                },
+                "propfind": {
+                    "$ref": "#/definitions/IRouterMatcher<Router,any>"
+                },
+                "proppatch": {
+                    "$ref": "#/definitions/IRouterMatcher<Router,any>"
+                },
+                "purge": {
+                    "$ref": "#/definitions/IRouterMatcher<Router,any>"
+                },
+                "put": {
+                    "$ref": "#/definitions/IRouterMatcher<Router,\"put\">"
+                },
+                "report": {
+                    "$ref": "#/definitions/IRouterMatcher<Router,any>"
+                },
+                "search": {
+                    "$ref": "#/definitions/IRouterMatcher<Router,any>"
+                },
+                "stack": {
+                    "description": "Stack of configured routes",
+                    "items": {
+                        "$ref": "#/definitions/ILayer"
+                    },
+                    "type": "array"
+                },
+                "subscribe": {
+                    "$ref": "#/definitions/IRouterMatcher<Router,any>"
+                },
+                "trace": {
+                    "$ref": "#/definitions/IRouterMatcher<Router,any>"
+                },
+                "unlink": {
+                    "$ref": "#/definitions/IRouterMatcher<Router,any>"
+                },
+                "unlock": {
+                    "$ref": "#/definitions/IRouterMatcher<Router,any>"
+                },
+                "unsubscribe": {
+                    "$ref": "#/definitions/IRouterMatcher<Router,any>"
+                },
+                "use": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/IRouterHandler<Router,string>"
+                        },
+                        {
+                            "$ref": "#/definitions/IRouterMatcher<Router,any>"
+                        }
+                    ]
+                }
+            },
+            "required": [
+                "all",
+                "checkout",
+                "connect",
+                "copy",
+                "delete",
+                "get",
+                "head",
+                "link",
+                "lock",
+                "m-search",
+                "merge",
+                "mkactivity",
+                "mkcol",
+                "move",
+                "notify",
+                "options",
+                "patch",
+                "post",
+                "propfind",
+                "proppatch",
+                "purge",
+                "put",
+                "report",
+                "search",
+                "stack",
+                "subscribe",
+                "trace",
+                "unlink",
+                "unlock",
+                "unsubscribe",
+                "use"
+            ],
+            "type": "object"
+        },
+        "SenderDto": {
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "firstname": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "lastname": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "firstname",
+                "id",
+                "lastname",
+                "phone"
+            ],
+            "type": "object"
+        },
+        "Shipment": {
+            "properties": {
+                "createdAt": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "declaredValue": {
+                    "type": "number"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "destination": {
+                    "$ref": "#/definitions/LocationDto"
+                },
+                "dimensions": {
+                    "$ref": "#/definitions/DimensionsDto"
+                },
+                "getTimeDelivered": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "origin": {
+                    "$ref": "#/definitions/LocationDto"
+                },
+                "receiver": {
+                    "$ref": "#/definitions/ReceiverDto"
+                },
+                "route": {
+                    "$ref": "#/definitions/Route"
+                },
+                "sender": {
+                    "$ref": "#/definitions/SenderDto"
+                },
+                "status": {
+                    "$ref": "#/definitions/ShipmentStatus"
+                },
+                "tracking": {
+                    "default": [],
+                    "items": {
+                        "$ref": "#/definitions/ShipmentTracking"
+                    },
+                    "type": "array"
+                },
+                "trackingCode": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "format": "date-time",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "createdAt",
+                "declaredValue",
+                "destination",
+                "dimensions",
+                "getTimeDelivered",
+                "id",
+                "origin",
+                "receiver",
+                "sender",
+                "status",
+                "trackingCode",
+                "updatedAt"
+            ],
+            "type": "object"
+        },
+        "ShipmentController": {
+            "type": "object"
+        },
+        "ShipmentDto": {
+            "properties": {
+                "createdAt": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "declaredValue": {
+                    "type": "number"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "destination": {
+                    "$ref": "#/definitions/LocationDto"
+                },
+                "dimensions": {
+                    "$ref": "#/definitions/DimensionsDto"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "origin": {
+                    "$ref": "#/definitions/LocationDto"
+                },
+                "receiver": {
+                    "$ref": "#/definitions/ReceiverDto"
+                },
+                "route": {
+                    "$ref": "#/definitions/RouteDto"
+                },
+                "sender": {
+                    "$ref": "#/definitions/SenderDto"
+                },
+                "senderId": {
+                    "type": "string"
+                },
+                "status": {
+                    "$ref": "#/definitions/ShipmentStatus"
+                },
+                "tracking": {
+                    "items": {
+                        "$ref": "#/definitions/ShipmentTrackingDto"
+                    },
+                    "type": "array"
+                },
+                "trackingCode": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "format": "date-time",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "declaredValue",
+                "destination",
+                "dimensions",
+                "id",
+                "origin",
+                "receiver",
+                "sender",
+                "status",
+                "trackingCode"
+            ],
+            "type": "object"
+        },
+        "ShipmentEntity": {
+            "properties": {
+                "created_at": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "declared_value": {
+                    "type": "number"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "destination": {
+                    "$ref": "#/definitions/LocationDto"
+                },
+                "dimensions": {
+                    "$ref": "#/definitions/DimensionsDto"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "origin": {
+                    "$ref": "#/definitions/LocationDto"
+                },
+                "receiver": {
+                    "$ref": "#/definitions/ReceiverDto"
+                },
+                "route": {
+                    "$ref": "#/definitions/RouteEntity"
+                },
+                "sender": {
+                    "$ref": "#/definitions/UserEntity"
+                },
+                "status": {
+                    "$ref": "#/definitions/ShipmentStatus"
+                },
+                "tracking": {
+                    "items": {
+                        "$ref": "#/definitions/ShipmentTrackingEntity"
+                    },
+                    "type": "array"
+                },
+                "tracking_code": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "format": "date-time",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "created_at",
+                "declared_value",
+                "destination",
+                "dimensions",
+                "id",
+                "origin",
+                "receiver",
+                "sender",
+                "status",
+                "tracking_code",
+                "updated_at"
+            ],
+            "type": "object"
+        },
+        "ShipmentManager": {
+            "type": "object"
+        },
+        "ShipmentRepository": {
+            "type": "object"
+        },
+        "ShipmentStatus": {
+            "enum": [
+                "En espera",
+                "En tránsito",
+                "Entregado"
+            ],
+            "type": "string"
+        },
+        "ShipmentTracking": {
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "status": {
+                    "$ref": "#/definitions/ShipmentStatus"
+                },
+                "timestamp": {
+                    "format": "date-time",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "id",
+                "status",
+                "timestamp"
+            ],
+            "type": "object"
+        },
+        "ShipmentTrackingDto": {
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "status": {
+                    "$ref": "#/definitions/ShipmentStatus"
+                },
+                "timestamp": {
+                    "format": "date-time",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "status",
+                "timestamp"
+            ],
+            "type": "object"
+        },
+        "ShipmentTrackingEntity": {
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "shipment": {
+                    "$ref": "#/definitions/ShipmentEntity"
+                },
+                "status": {
+                    "$ref": "#/definitions/ShipmentStatus"
+                },
+                "timestamp": {
+                    "format": "date-time",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "id",
+                "shipment",
+                "status",
+                "timestamp"
+            ],
+            "type": "object"
+        },
+        "Socket": {
+            "description": "This class is an abstraction of a TCP socket or a streaming `IPC` endpoint\n(uses named pipes on Windows, and Unix domain sockets otherwise). It is also\nan `EventEmitter`.\n\nA `net.Socket` can be created by the user and used directly to interact with\na server. For example, it is returned by {@link createConnection},\nso the user can use it to talk to the server.\n\nIt can also be created by Node.js and passed to the user when a connection\nis received. For example, it is passed to the listeners of a `'connection'` event emitted on a {@link Server}, so the user can use\nit to interact with the client.",
+            "properties": {
+                "allowHalfOpen": {
+                    "description": "If `false` then the stream will automatically end the writable side when the\nreadable side ends. Set initially by the `allowHalfOpen` constructor option,\nwhich defaults to `true`.\n\nThis can be changed manually to change the half-open behavior of an existing\n`Duplex` stream instance, but must be changed before the `'end'` event is emitted.",
+                    "type": "boolean"
+                },
+                "autoSelectFamilyAttemptedAddresses": {
+                    "description": "This property is only present if the family autoselection algorithm is enabled in `socket.connect(options)`\nand it is an array of the addresses that have been attempted.\n\nEach address is a string in the form of `$IP:$PORT`.\nIf the connection was successful, then the last address is the one that the socket is currently connected to.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "bufferSize": {
+                    "description": "This property shows the number of characters buffered for writing. The buffer\nmay contain strings whose length after encoding is not yet known. So this number\nis only an approximation of the number of bytes in the buffer.\n\n`net.Socket` has the property that `socket.write()` always works. This is to\nhelp users get up and running quickly. The computer cannot always keep up\nwith the amount of data that is written to a socket. The network connection\nsimply might be too slow. Node.js will internally queue up the data written to a\nsocket and send it out over the wire when it is possible.\n\nThe consequence of this internal buffering is that memory may grow.\nUsers who experience large or growing `bufferSize` should attempt to\n\"throttle\" the data flows in their program with `socket.pause()` and `socket.resume()`.",
+                    "type": "number"
+                },
+                "bytesRead": {
+                    "description": "The amount of received bytes.",
+                    "type": "number"
+                },
+                "bytesWritten": {
+                    "description": "The amount of bytes sent.",
+                    "type": "number"
+                },
+                "closed": {
+                    "description": "Is `true` after `'close'` has been emitted.",
+                    "type": "boolean"
+                },
+                "connecting": {
+                    "description": "If `true`, `socket.connect(options[, connectListener])` was\ncalled and has not yet finished. It will stay `true` until the socket becomes\nconnected, then it is set to `false` and the `'connect'` event is emitted. Note\nthat the `socket.connect(options[, connectListener])` callback is a listener for the `'connect'` event.",
+                    "type": "boolean"
+                },
+                "destroyed": {
+                    "description": "See `writable.destroyed` for further details.",
+                    "type": "boolean"
+                },
+                "errored": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/Error"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "Returns error if the stream has been destroyed with an error."
+                },
+                "localAddress": {
+                    "description": "The string representation of the local IP address the remote client is\nconnecting on. For example, in a server listening on `'0.0.0.0'`, if a client\nconnects on `'192.168.1.1'`, the value of `socket.localAddress` would be`'192.168.1.1'`.",
+                    "type": "string"
+                },
+                "localFamily": {
+                    "description": "The string representation of the local IP family. `'IPv4'` or `'IPv6'`.",
+                    "type": "string"
+                },
+                "localPort": {
+                    "description": "The numeric representation of the local port. For example, `80` or `21`.",
+                    "type": "number"
+                },
+                "pending": {
+                    "description": "This is `true` if the socket is not connected yet, either because `.connect()`has not yet been called or because it is still in the process of connecting\n(see `socket.connecting`).",
+                    "type": "boolean"
+                },
+                "readable": {
+                    "description": "Is `true` if it is safe to call {@link read}, which means\nthe stream has not been destroyed or emitted `'error'` or `'end'`.",
+                    "type": "boolean"
+                },
+                "readableAborted": {
+                    "description": "Returns whether the stream was destroyed or errored before emitting `'end'`.",
+                    "type": "boolean"
+                },
+                "readableDidRead": {
+                    "description": "Returns whether `'data'` has been emitted.",
+                    "type": "boolean"
+                },
+                "readableEncoding": {
+                    "anyOf": [
+                        {
+                            "enum": [
+                                "ascii",
+                                "base64",
+                                "base64url",
+                                "binary",
+                                "hex",
+                                "latin1",
+                                "ucs-2",
+                                "ucs2",
+                                "utf-16le",
+                                "utf-8",
+                                "utf16le",
+                                "utf8"
+                            ],
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "Getter for the property `encoding` of a given `Readable` stream. The `encoding` property can be set using the {@link setEncoding} method."
+                },
+                "readableEnded": {
+                    "description": "Becomes `true` when [`'end'`](https://nodejs.org/docs/latest-v22.x/api/stream.html#event-end) event is emitted.",
+                    "type": "boolean"
+                },
+                "readableFlowing": {
+                    "description": "This property reflects the current state of a `Readable` stream as described\nin the [Three states](https://nodejs.org/docs/latest-v22.x/api/stream.html#three-states) section.",
+                    "type": [
+                        "null",
+                        "boolean"
+                    ]
+                },
+                "readableHighWaterMark": {
+                    "description": "Returns the value of `highWaterMark` passed when creating this `Readable`.",
+                    "type": "number"
+                },
+                "readableLength": {
+                    "description": "This property contains the number of bytes (or objects) in the queue\nready to be read. The value provides introspection data regarding\nthe status of the `highWaterMark`.",
+                    "type": "number"
+                },
+                "readableObjectMode": {
+                    "description": "Getter for the property `objectMode` of a given `Readable` stream.",
+                    "type": "boolean"
+                },
+                "readyState": {
+                    "$ref": "#/definitions/SocketReadyState",
+                    "description": "This property represents the state of the connection as a string.\n\n* If the stream is connecting `socket.readyState` is `opening`.\n* If the stream is readable and writable, it is `open`.\n* If the stream is readable and not writable, it is `readOnly`.\n* If the stream is not readable and writable, it is `writeOnly`."
+                },
+                "remoteAddress": {
+                    "description": "The string representation of the remote IP address. For example,`'74.125.127.100'` or `'2001:4860:a005::68'`. Value may be `undefined` if\nthe socket is destroyed (for example, if the client disconnected).",
+                    "type": "string"
+                },
+                "remoteFamily": {
+                    "description": "The string representation of the remote IP family. `'IPv4'` or `'IPv6'`. Value may be `undefined` if\nthe socket is destroyed (for example, if the client disconnected).",
+                    "type": "string"
+                },
+                "remotePort": {
+                    "description": "The numeric representation of the remote port. For example, `80` or `21`. Value may be `undefined` if\nthe socket is destroyed (for example, if the client disconnected).",
+                    "type": "number"
+                },
+                "timeout": {
+                    "description": "The socket timeout in milliseconds as set by `socket.setTimeout()`.\nIt is `undefined` if a timeout has not been set.",
+                    "type": "number"
+                },
+                "writable": {
+                    "description": "Is `true` if it is safe to call `writable.write()`, which means\nthe stream has not been destroyed, errored, or ended.",
+                    "type": "boolean"
+                },
+                "writableCorked": {
+                    "description": "Number of times `writable.uncork()` needs to be\ncalled in order to fully uncork the stream.",
+                    "type": "number"
+                },
+                "writableEnded": {
+                    "description": "Is `true` after `writable.end()` has been called. This property\ndoes not indicate whether the data has been flushed, for this use `writable.writableFinished` instead.",
+                    "type": "boolean"
+                },
+                "writableFinished": {
+                    "description": "Is set to `true` immediately before the `'finish'` event is emitted.",
+                    "type": "boolean"
+                },
+                "writableHighWaterMark": {
+                    "description": "Return the value of `highWaterMark` passed when creating this `Writable`.",
+                    "type": "number"
+                },
+                "writableLength": {
+                    "description": "This property contains the number of bytes (or objects) in the queue\nready to be written. The value provides introspection data regarding\nthe status of the `highWaterMark`.",
+                    "type": "number"
+                },
+                "writableNeedDrain": {
+                    "description": "Is `true` if the stream's buffer has been full and stream will emit `'drain'`.",
+                    "type": "boolean"
+                },
+                "writableObjectMode": {
+                    "description": "Getter for the property `objectMode` of a given `Writable` stream.",
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "allowHalfOpen",
+                "autoSelectFamilyAttemptedAddresses",
+                "bufferSize",
+                "bytesRead",
+                "bytesWritten",
+                "closed",
+                "connecting",
+                "destroyed",
+                "errored",
+                "pending",
+                "readable",
+                "readableAborted",
+                "readableDidRead",
+                "readableEncoding",
+                "readableEnded",
+                "readableFlowing",
+                "readableHighWaterMark",
+                "readableLength",
+                "readableObjectMode",
+                "readyState",
+                "writable",
+                "writableCorked",
+                "writableEnded",
+                "writableFinished",
+                "writableHighWaterMark",
+                "writableLength",
+                "writableNeedDrain",
+                "writableObjectMode"
+            ],
+            "type": "object"
+        },
+        "SocketReadyState": {
+            "enum": [
+                "closed",
+                "open",
+                "opening",
+                "readOnly",
+                "writeOnly"
+            ],
+            "type": "string"
+        },
+        "T": {
+            "type": "object"
+        },
+        "UpdateShipmenTrackingDto": {
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "status": {
+                    "$ref": "#/definitions/ShipmentStatus"
+                }
+            },
+            "required": [
+                "status"
+            ],
+            "type": "object"
+        },
+        "User": {
+            "properties": {
+                "createdAt": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "docNumber": {
+                    "type": "string"
+                },
+                "docType": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "firstname": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "lastname": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "role": {
+                    "$ref": "#/definitions/Role"
+                },
+                "updatedAt": {
+                    "format": "date-time",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "createdAt",
+                "email",
+                "firstname",
+                "id",
+                "lastname",
+                "password",
+                "phone",
+                "role",
+                "updatedAt"
+            ],
+            "type": "object"
+        },
+        "UserDto": {
+            "properties": {
+                "docNumber": {
+                    "type": "string"
+                },
+                "docType": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "firstname": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "lastname": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "role": {
+                    "$ref": "#/definitions/Role"
+                }
+            },
+            "required": [
+                "email",
+                "firstname",
+                "id",
+                "lastname",
+                "password",
+                "phone",
+                "role"
+            ],
+            "type": "object"
+        },
+        "UserEntity": {
+            "properties": {
+                "created_at": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "doc_number": {
+                    "type": "string"
+                },
+                "doc_type": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "firstname": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "lastname": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "role": {
+                    "$ref": "#/definitions/Role"
+                },
+                "shipments": {
+                    "items": {
+                        "$ref": "#/definitions/ShipmentEntity"
+                    },
+                    "type": "array"
+                },
+                "updated_at": {
+                    "format": "date-time",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "created_at",
+                "email",
+                "firstname",
+                "id",
+                "lastname",
+                "password",
+                "phone",
+                "role",
+                "updated_at"
+            ],
+            "type": "object"
+        },
+        "UserRepository": {
+            "type": "object"
+        },
+        "qs.ParsedQs": {
+            "additionalProperties": {
+                "anyOf": [
+                    {
+                        "$ref": "#/definitions/qs.ParsedQs"
+                    },
+                    {
+                        "items": {
+                            "anyOf": [
+                                {
+                                    "$ref": "#/definitions/qs.ParsedQs"
+                                },
+                                {
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "type": "array"
+                    },
+                    {
+                        "type": "string"
+                    }
+                ]
+            },
+            "type": "object"
+        }
+    }
+}
+

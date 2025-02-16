@@ -18,6 +18,8 @@
     "node-geocoder": "^4.4.1",
     "redis": "^4.7.0",
     "shipping": "file:",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
     "typeorm": "^0.3.20"
   },
   "devDependencies": {
