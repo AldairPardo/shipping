@@ -20,7 +20,9 @@ export class ShipmentEntity {
     @JoinColumn({ name: "sender_id" })
     sender!: UserEntity;
 
-    @OneToMany(() => ShipmentTrackingEntity, (tracking) => tracking.shipment)
+    @OneToMany(() => ShipmentTrackingEntity, (tracking) => tracking.shipment, {
+        cascade: true,
+    })
     tracking?: ShipmentTrackingEntity[];
 
     @Column({ type: "json" })
@@ -62,6 +64,9 @@ export class ShipmentEntity {
         this.id = model.id;
         this.tracking_code = model.trackingCode;
         this.sender = sender;
+        this.tracking = model.tracking?.map((tracking) =>
+            ShipmentTrackingEntity.from(tracking)
+        );
         this.route = model.route ? RouteEntity.from(model.route) : undefined;
         this.receiver = model.receiver;
         this.origin = model.origin;
@@ -85,6 +90,7 @@ export class ShipmentEntity {
             this.status,
             {
                 id: this.id,
+                tracking: this.tracking?.map((tracking) => tracking.toModel()),
                 route: this.route?.toModel(),
                 trackingCode: this.tracking_code,
                 description: this.description,

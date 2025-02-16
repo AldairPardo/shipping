@@ -56,3 +56,12 @@ export async function validateLocation(location: LocationDto): Promise<LocationD
         throw new CustomError("Dirección no encontrada", 400);
     }
 }
+
+export function milisecondsToMinutesOrHours(ms: number): string {
+    const minutes = Math.floor(ms / 60000);
+    if (minutes > 120) {
+        const hours = (minutes / 60).toFixed(2);
+        return `${hours} horas`;
+    }
+    return `${minutes} minutos`;
+}

@@ -5,6 +5,8 @@ import { AuthRequest } from "@utils/middlewares/checkRole.middleware";
 import { Role } from "@modules/auth/domain/enums/role.enum";
 import { AssignShipmentDto } from "../dtos/assign-shipment.dto";
 import { ShipmentStatus } from "../enums/status.enum";
+import { FilterDto } from "../dtos/get-statistics.dto";
+import { MetricsType } from "../enums/metrics.enum";
 
 export class ShipmentController {
     static async createShipment(req: AuthRequest, res: Response) {
@@ -28,7 +30,7 @@ export class ShipmentController {
                 senderId,
                 driverId
             );
-            res.json(shipment);
+            res.json({ shipment });
         } catch (error) {
             res.status(error.status || 400).json({ message: error.message });
         }
@@ -39,7 +41,7 @@ export class ShipmentController {
             const shipments = await ShipmentManager.getShipments(
                 req.user?.id as string
             );
-            res.json(shipments);
+            res.json({ shipments });
         } catch (error) {
             res.status(error.status || 400).json({ message: error.message });
         }
@@ -51,7 +53,7 @@ export class ShipmentController {
             const payload: AssignShipmentDto = req.body;
 
             await ShipmentManager.assignRoute(trackingCode, payload.routeId);
-            res.json("Ruta asignada con éxito");
+            res.json({ message: "Ruta asignada con éxito" });
         } catch (error) {
             res.status(error.status || 400).json({ message: error.message });
         }
@@ -62,7 +64,7 @@ export class ShipmentController {
             const { trackingCode } = req.params;
             const driverId = req.user?.role === Role.DRIVER ? req.user.id : undefined;
             await ShipmentManager.updateShipmentStatus(trackingCode, ShipmentStatus.DELIVERED, driverId);
-            res.json("Envío finalizado");
+            res.json({ message: "Envío finalizado" });
         } catch (error) {
             res.status(error.status || 400).json({ message: error.message });
         }
@@ -73,6 +75,17 @@ export class ShipmentController {
             const { trackingCode } = req.params;
             const status = await ShipmentManager.getShipmentStatus(trackingCode);
             res.json({ status});
+        } catch (error) {
+            res.status(error.status || 400).json({ message: error.message });
+        }
+    }
+
+    static async getStatistics(req: AuthRequest, res: Response) {
+        try {
+            const { type } = req.params;
+            const filter: FilterDto = req.query;
+            const statistics = await ShipmentManager.getDashboard(filter,type as MetricsType);
+            res.json({ metrics: statistics });
         } catch (error) {
             res.status(error.status || 400).json({ message: error.message });
         }

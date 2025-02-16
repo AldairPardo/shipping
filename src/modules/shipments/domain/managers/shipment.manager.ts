@@ -4,13 +4,17 @@ import { ShipmentDto } from "../dtos/shipment.dto";
 import { Shipment } from "../models/shipment.model";
 import { ShipmentStatus } from "../enums/status.enum";
 import { ShipmentRepository } from "@modules/shipments/data/shipment.repository";
-import { validateLocation } from "@utils/helpers/functions";
-import { ShipmentTrackingRepository } from "@modules/shipments/data/shipment-tracking.repository";
+import { milisecondsToMinutesOrHours, validateLocation } from "@utils/helpers/functions";
 import { ShipmentTracking } from "../models/shipment-tracking.model";
 import { Route } from "@modules/shipment-routes/domain/models/route.model";
 import { RouteRepository } from "@modules/shipment-routes/data/routes.repository";
 import vehicles from "@utils/data/vehicles.json";
 import redisClient from "@utils/database/config/redisClient";
+import { FilterDto } from "../dtos/get-statistics.dto";
+import { Between, In } from "typeorm";
+import { ShipmentTrackingDto } from "../dtos/shipment-tracking.dto";
+import { MetricsType } from "../enums/metrics.enum";
+import { createHash } from "crypto";
 
 
 export class ShipmentManager {
@@ -28,12 +32,13 @@ export class ShipmentManager {
 
         const shipment = Shipment.fromJson(dto, senderDto);
 
+        const tracking: ShipmentTrackingDto = {
+            status: ShipmentStatus.PENDING,
+            timestamp: new Date(),
+        };
+        shipment.tracking!.push(ShipmentTracking.fromJson(tracking));
+        
         await ShipmentRepository.save(shipment);
-        const tracking = new ShipmentTracking(
-            shipment.id,
-            ShipmentStatus.PENDING
-        );
-        await ShipmentTrackingRepository.save(tracking);
         await this.setShipmentCache(
             shipment.trackingCode,
             ShipmentStatus.PENDING
@@ -92,6 +97,10 @@ export class ShipmentManager {
         shipment.route = Route.fromJson(route);
         if (route.isActive) {
             shipment.status = ShipmentStatus.IN_TRANSIT;
+            shipment.tracking!.push(ShipmentTracking.fromJson({
+                status: ShipmentStatus.IN_TRANSIT,
+                timestamp: new Date(),
+            }));
         }
         await ShipmentRepository.save(shipment);
     }
@@ -183,11 +192,12 @@ export class ShipmentManager {
         shipment.status = status;
         await this.setShipmentCache(trackingCode, status);
 
+        const tracking: ShipmentTrackingDto = {
+            status,
+            timestamp: new Date()
+        }
+        shipment.tracking!.push(ShipmentTracking.fromJson(tracking));
         await ShipmentRepository.save(shipment);
-
-        await ShipmentTrackingRepository.save(
-            new ShipmentTracking(shipment.id, status)
-        );
     }
 
     static async getShipmentStatus(trackingCode: string): Promise<ShipmentStatus> {
@@ -212,5 +222,80 @@ export class ShipmentManager {
         await redisClient.set(cacheKey, status);
         await redisClient.expire(cacheKey, 60);
         console.info("Caché actualizado");
+    }
+
+    static async getDashboard(filter: FilterDto, type: MetricsType) {
+        const queryKey = `shipments:${createHash("md5")
+            .update(JSON.stringify(filter))
+            .digest("hex")}`;
+
+        const cachedData = await redisClient.get(queryKey);
+        if (cachedData) {
+            console.info("Caché encontrado");
+            return JSON.parse(cachedData);
+        }
+
+        const query = await this.buildQuery(filter);
+        const shipments = await ShipmentRepository.findByQuery(query);
+
+        let response: any; 
+        switch (type) {
+            case MetricsType.SHIPMENTS:
+                response = shipments.map((s) => s.toJson());
+                break;
+            case MetricsType.DRIVERS:
+                response = await this.getDriversStatistics(shipments);
+                break;
+            default:
+                throw new CustomError("Tipo de dashboard no soportado", 400);
+        }
+
+        await redisClient.set(queryKey, JSON.stringify(response));
+        await redisClient.expire(queryKey, 60);
+        console.info("Caché actualizado");
+        return response;
+    }
+
+    private static async buildQuery(filter: FilterDto): Promise<any> {
+        const query: any = {};
+        if (filter.status) {
+            query['status'] = filter.status;
+        }
+        if (filter.driverName) {
+            const drivers = await UserRepository.findByName(filter.driverName);
+            query['route'] = { driver_id: In(drivers.map(d => d.id)) };
+        }
+        if (filter.startDate && filter.endDate) {
+            query['created_at'] = Between(new Date(+filter.startDate), new Date(+filter.endDate));
+        }
+        return query;
+    }
+
+    private static async getDriversStatistics(shipments: Shipment[]): Promise<any[]> {
+        const drivers = [...new Set(shipments.map(s => s.route?.driverId).filter(d => d))];
+
+        const driversStatistics = await Promise.all(drivers.map(async d => {
+            const driverShipments = shipments.filter(s => s.route?.driverId === d);
+            const totalShipments = driverShipments.length;
+            const deliveredShipments = driverShipments.filter(s => s.status === ShipmentStatus.DELIVERED);
+
+            const averageTime = this.calculateAverageTime(deliveredShipments);
+
+            const driver = await UserRepository.findById(d!);
+            return {
+                driverId: d,
+                driverName: driver!.firstname + " " + driver!.lastname,
+                totalShipments,
+                totalDelivered: deliveredShipments.length,
+                averageTime: milisecondsToMinutesOrHours(averageTime),
+            }
+        }));
+
+        return driversStatistics;
+    }
+
+    private static calculateAverageTime(deliveredShipments: Shipment[]): number {
+        const timesDelivered = deliveredShipments.map(s => +s.getTimeDelivered);
+        return timesDelivered.reduce((acc, t) => acc + t, 0) / timesDelivered.length;
     }
 }

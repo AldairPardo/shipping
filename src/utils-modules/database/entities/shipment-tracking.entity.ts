@@ -21,10 +21,14 @@ export class ShipmentTrackingEntity {
     @CreateDateColumn()
     timestamp!: Date;
 
+    static from(model: ShipmentTracking): ShipmentTrackingEntity {
+        const entity = new ShipmentTrackingEntity();
+        entity.loadModel(model);
+        return entity;
+    }
 
-    loadModel(model: ShipmentTracking, shipment: ShipmentEntity) {
+    loadModel(model: ShipmentTracking) {
         this.id = model.id;
-        this.shipment = shipment;
         this.status = model.status;
         this.description = model.description;
         this.timestamp = model.timestamp;
@@ -32,7 +36,6 @@ export class ShipmentTrackingEntity {
 
     toModel(): ShipmentTracking {
         return new ShipmentTracking(
-            this.shipment.id,
             this.status,
             {
                 id: this.id,

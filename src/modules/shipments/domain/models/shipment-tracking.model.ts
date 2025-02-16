@@ -9,7 +9,6 @@ export class ShipmentTracking {
     readonly timestamp: Date;
 
     constructor(
-        readonly shipmentId: string,
         public status: ShipmentStatus,
         options?: {
             id?: string;
@@ -24,7 +23,6 @@ export class ShipmentTracking {
 
     toJson(): ShipmentTrackingDto {
         return {
-            shipmentId: this.shipmentId,
             status: this.status,
             description: this.description,
             timestamp: this.timestamp,
@@ -33,7 +31,6 @@ export class ShipmentTracking {
 
     static fromJson(json: ShipmentTrackingDto): ShipmentTracking {
         return new ShipmentTracking(
-            json.shipmentId,
             json.status,
             {
                 description: json.description,
