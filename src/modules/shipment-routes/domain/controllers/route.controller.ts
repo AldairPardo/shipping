@@ -21,7 +21,7 @@ export class RouteController {
             const { id } = req.params;
             const driverId = req.user?.role === Role.DRIVER ? req.user.id : undefined;
             const route = await RouteManager.getRoute(id, driverId);
-            res.json(route);
+            res.json({ route });
         } catch (error) {
             res.status(error.status || 400).json({ message: error.message });
         }
