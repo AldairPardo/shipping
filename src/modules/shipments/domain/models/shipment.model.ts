@@ -6,11 +6,13 @@ import { ShipmentStatus } from "../enums/status.enum";
 import { createHash } from "crypto";
 import { v1 as uuid } from "uuid";
 import { LocationDto } from "@modules/shipments/domain/dtos/location.dto";
+import { Route } from "@modules/shipment-routes/domain/models/route.model";
 
 export class Shipment {
     readonly id: string;
     readonly trackingCode: string;
     readonly description?: string;
+    public route?: Route;
     readonly createdAt: Date;
     readonly updatedAt: Date;
 
@@ -24,6 +26,7 @@ export class Shipment {
         public status: ShipmentStatus = ShipmentStatus.PENDING,
         options?: {
             id?: string;
+            route?: Route;
             trackingCode?: string;
             description?: string;
             createdAt?: Date;
@@ -31,6 +34,7 @@ export class Shipment {
         }
     ) {
         this.id = options?.id ?? Shipment.newId;
+        this.route = options?.route;
         this.trackingCode = options?.trackingCode ?? Shipment.newTrackingCode;
         this.description = options?.description;
         this.createdAt = options?.createdAt ?? new Date();
@@ -40,6 +44,7 @@ export class Shipment {
     toJson(): ShipmentDto {
         return {
             id: this.id,
+            route: this.route, 
             trackingCode: this.trackingCode,
             sender: this.sender,
             receiver: this.receiver,
@@ -65,6 +70,7 @@ export class Shipment {
             json.status,
             {
                 id: json.id,
+                route: json.route ? Route.fromJson(json.route) : undefined,
                 trackingCode: json.trackingCode,
                 description: json.description,
                 createdAt: json.createdAt,

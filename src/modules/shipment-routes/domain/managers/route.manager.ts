@@ -5,6 +5,7 @@ import { Route } from "../models/route.model";
 import { CustomError } from "@utils/helpers/customError";
 import { RouteTrackingDto } from "../dtos/route-tracking.dto";
 import { RouteTracking } from "../models/route-tracking.model";
+import vehicles from "@utils/data/vehicles.json";
 
 export class RouteManager {
     static async createRoute(dto: RouteDto): Promise<RouteDto> {
@@ -22,6 +23,12 @@ export class RouteManager {
                     400
                 );
             }
+        }
+
+        //validar vehiculo 
+        const vehicle = vehicles.find((v) => v.id === dto.vehicleId);
+        if (!vehicle) {
+            throw new CustomError("El vehículo no es válido", 400);
         }
 
         const route = Route.fromJson(dto);
@@ -134,6 +141,28 @@ export class RouteManager {
 
         tracking.timestamp = new Date();
         route.tracking!.push(RouteTracking.fromJson(tracking));
+        await RouteRepository.save(route);
+    }
+
+    static async finishRoute(id: string, driverId: string): Promise<void> {
+        const route = await RouteRepository.findById(id);
+        if (!route) {
+            throw new CustomError("La ruta no existe", 404);
+        }
+
+        if (route.driverId !== driverId) {
+            throw new CustomError(
+                "No tienes permisos para finalizar esta ruta",
+                403
+            );
+        }
+
+        if (!route.isActive) {
+            throw new CustomError("La ruta no está activa", 400);
+        }
+
+        route.isActive = false;
+        route.finishedAt = new Date();
         await RouteRepository.save(route);
     }
 }

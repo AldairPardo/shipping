@@ -49,4 +49,15 @@ export class RouteController {
             res.status(error.status || 400).json({ message: error.message });
         }
     }
+
+    static async finishRoute(req: AuthRequest, res: Response) {
+        try {
+            const { id } = req.params;
+            const driverId = req.user?.id as string;
+            await RouteManager.finishRoute(id, driverId);
+            res.json({ message: "Route finished" });
+        } catch (error) {
+            res.status(error.status || 400).json({ message: error.message });
+        }
+    }
 }

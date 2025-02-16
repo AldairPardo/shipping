@@ -12,5 +12,6 @@ router.post("", checkRole([Role.ADMIN]), validateDto(RouteDto), RouteController.
 router.get("/:id", checkRole([Role.ADMIN]), RouteController.getRoute);
 router.put("/:id/assign-driver", checkRole([Role.ADMIN]), RouteController.assignDriver);
 router.put("/:id/add-tracking", checkRole([Role.DRIVER]), validateDto(RouteTrackingDto), RouteController.addTracking);
+router.put("/:id/finish", checkRole([Role.DRIVER]), RouteController.finishRoute);
 
 export const RouteRoutes = router;

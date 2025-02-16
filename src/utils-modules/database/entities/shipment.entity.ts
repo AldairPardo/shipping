@@ -62,6 +62,7 @@ export class ShipmentEntity {
         this.id = model.id;
         this.tracking_code = model.trackingCode;
         this.sender = sender;
+        this.route = model.route ? RouteEntity.from(model.route) : undefined;
         this.receiver = model.receiver;
         this.origin = model.origin;
         this.destination = model.destination;
@@ -75,7 +76,7 @@ export class ShipmentEntity {
 
     toModel(): Shipment {
         return new Shipment(
-            this.sender.toModel().toSenderJson(),
+            this.sender?.toModel().toSenderJson(),
             this.receiver,
             this.origin,
             this.destination,

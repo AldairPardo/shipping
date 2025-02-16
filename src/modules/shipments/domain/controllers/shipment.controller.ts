@@ -3,6 +3,7 @@ import { ShipmentDto } from "../dtos/shipment.dto";
 import { ShipmentManager } from "../managers/shipment.manager";
 import { AuthRequest } from "@utils/middlewares/checkRole.middleware";
 import { Role } from "@modules/auth/domain/enums/role.enum";
+import { AssignShipmentDto } from "../dtos/assign-shipment.dto";
 
 export class ShipmentController {
     static async createShipment(req: AuthRequest, res: Response) {
@@ -36,6 +37,18 @@ export class ShipmentController {
                 req.user?.id as string
             );
             res.json(shipments);
+        } catch (error) {
+            res.status(error.status || 400).json({ message: error.message });
+        }
+    }
+
+    static async assignRoute(req: AuthRequest, res: Response) {
+        try {
+            const { trackingCode } = req.params;
+            const payload: AssignShipmentDto = req.body;
+
+            await ShipmentManager.assignRoute(trackingCode, payload.routeId);
+            res.json("Ruta asignada con éxito");
         } catch (error) {
             res.status(error.status || 400).json({ message: error.message });
         }

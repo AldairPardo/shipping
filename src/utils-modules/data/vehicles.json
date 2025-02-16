@@ -1,0 +1,20 @@
+[
+    {
+        "id": 1,
+        "name": "Light Truck",
+        "maxWeight": 3500,
+        "maxVolume": 20000000
+    },
+    {
+        "id": 2,
+        "name": "Medium Truck",
+        "maxWeight": 12000,
+        "maxVolume": 60000000
+    },
+    {
+        "id": 3,
+        "name": "Heavy Truck",
+        "maxWeight": 25000,
+        "maxVolume": 120000000
+    }
+]

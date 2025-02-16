@@ -80,6 +80,7 @@ export class RouteEntity {
             this.estimated_hours,
             {
                 id: this.id,
+                shipments: this.shipments?.map((shipment) => shipment.toModel()),
                 tracking: this.tracking?.map((tracking) => tracking.toModel()),
                 driverId: this.driver_id,
                 finishedAt: this.finished_at,

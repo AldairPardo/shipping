@@ -5,6 +5,7 @@ import { ReceiverDto } from '@modules/shipments/domain/dtos/receiver.dto';
 import { SenderDto } from '@modules/shipments/domain/dtos/sender.dto';
 import { ShipmentStatus } from '../enums/status.enum';
 import { LocationDto } from './location.dto';
+import { RouteDto } from '@modules/shipment-routes/domain/dtos/route.dto';
 
 export class ShipmentDto {
     @IsEmpty()
@@ -38,6 +39,9 @@ export class ShipmentDto {
     @ValidateNested()
     @Type(() => LocationDto)
     destination!: LocationDto;
+
+    @IsOptional()
+    route?: RouteDto;
 
     @IsString()
     @IsOptional()
