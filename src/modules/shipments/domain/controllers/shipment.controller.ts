@@ -67,4 +67,14 @@ export class ShipmentController {
             res.status(error.status || 400).json({ message: error.message });
         }
     }
+
+    static async getShipmentStatus(req: AuthRequest, res: Response) {
+        try {
+            const { trackingCode } = req.params;
+            const status = await ShipmentManager.getShipmentStatus(trackingCode);
+            res.json({ status});
+        } catch (error) {
+            res.status(error.status || 400).json({ message: error.message });
+        }
+    }
 }

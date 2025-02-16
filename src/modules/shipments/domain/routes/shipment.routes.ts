@@ -13,5 +13,6 @@ router.get("/:trackingCode", checkRole([Role.CUSTOMER, Role.ADMIN, Role.DRIVER])
 router.get("", checkRole([Role.CUSTOMER]), ShipmentController.getShipments);
 router.post("/:trackingCode/assign", checkRole([Role.ADMIN]), validateDto(AssignShipmentDto), ShipmentController.assignRoute);
 router.put("/:trackingCode/finish", checkRole([Role.DRIVER]), ShipmentController.finishShipment);
+router.get("/:trackingCode/status", ShipmentController.getShipmentStatus);
 
 export const ShipmentRoutes = router;

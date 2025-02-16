@@ -10,6 +10,7 @@ import { ShipmentTracking } from "../models/shipment-tracking.model";
 import { Route } from "@modules/shipment-routes/domain/models/route.model";
 import { RouteRepository } from "@modules/shipment-routes/data/routes.repository";
 import vehicles from "@utils/data/vehicles.json";
+import redisClient from "@utils/database/config/redisClient";
 
 
 export class ShipmentManager {
@@ -33,6 +34,10 @@ export class ShipmentManager {
             ShipmentStatus.PENDING
         );
         await ShipmentTrackingRepository.save(tracking);
+        await this.setShipmentCache(
+            shipment.trackingCode,
+            ShipmentStatus.PENDING
+        );
 
         return shipment.toJson();
     }
@@ -176,10 +181,36 @@ export class ShipmentManager {
         }
 
         shipment.status = status;
+        await this.setShipmentCache(trackingCode, status);
+
         await ShipmentRepository.save(shipment);
 
         await ShipmentTrackingRepository.save(
             new ShipmentTracking(shipment.id, status)
         );
+    }
+
+    static async getShipmentStatus(trackingCode: string): Promise<ShipmentStatus> {
+        const cacheKey = `shipment_status_${trackingCode}`;
+        const status = await redisClient.get(cacheKey);
+        if (status) {
+            console.info('Caché encontrado');
+            return status as ShipmentStatus;
+        }
+
+        const shipment = await ShipmentRepository.findByTrackingCode(trackingCode);
+        if (!shipment) {
+            throw new CustomError("El envío no existe", 404);
+        }
+
+        return shipment.status;
+    }
+
+    private static async setShipmentCache(trackingCode: string, status: ShipmentStatus): Promise<void> {
+        const cacheKey = `shipment_status_${trackingCode}`;
+        // Guardar en caché
+        await redisClient.set(cacheKey, status);
+        await redisClient.expire(cacheKey, 60);
+        console.info("Caché actualizado");
     }
 }
