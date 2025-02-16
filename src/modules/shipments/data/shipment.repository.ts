@@ -17,7 +17,7 @@ export class ShipmentRepository {
             ShipmentEntity
         ).findOne({
             where: { tracking_code: trackingCode },
-            relations: ["sender","route"],
+            relations: ["sender","route","tracking"],
         });
         return entity?.toModel();
     }
@@ -26,6 +26,14 @@ export class ShipmentRepository {
         const entities = await AppDataSource.getRepository(ShipmentEntity).find({
             where: { sender: { id: senderId } },
             relations: ["sender"],
+        });
+        return entities.map((entity) => entity.toModel());
+    }
+
+    static async findByQuery(query: any): Promise<Shipment[]> {
+        const entities = await AppDataSource.getRepository(ShipmentEntity).find({
+            where: query,
+            relations: ["tracking", "sender", "route"],
         });
         return entities.map((entity) => entity.toModel());
     }

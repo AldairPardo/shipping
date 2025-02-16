@@ -12,10 +12,6 @@ export class UpdateShipmenTrackingDto {
 }
 
 export class ShipmentTrackingDto extends UpdateShipmenTrackingDto {
-    @IsString()
-    @IsNotEmpty()
-    shipmentId!: string;
-
     @IsDate()
     @IsNotEmpty()
     timestamp!: Date;

@@ -6,6 +6,7 @@ import { SenderDto } from '@modules/shipments/domain/dtos/sender.dto';
 import { ShipmentStatus } from '../enums/status.enum';
 import { LocationDto } from './location.dto';
 import { RouteDto } from '@modules/shipment-routes/domain/dtos/route.dto';
+import { ShipmentTrackingDto } from './shipment-tracking.dto';
 
 export class ShipmentDto {
     @IsEmpty()
@@ -54,6 +55,11 @@ export class ShipmentDto {
     @IsNotEmpty()
     @IsEnum(ShipmentStatus)
     status: ShipmentStatus = ShipmentStatus.PENDING;
+
+    @IsOptional()
+    @ValidateNested({ each: true })
+    @Type(() => ShipmentTrackingDto)
+    tracking?: ShipmentTrackingDto[];
 
     @IsDate()
     @IsOptional()
